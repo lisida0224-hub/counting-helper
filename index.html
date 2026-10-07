@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Counting Helper v1.4.9.2
+  Counting Helper v1.4.9.3
   Copyright (c) 2026 Sida Li. All rights reserved. 保留所有权利。
   Free for non-commercial research and teaching; may be shared unmodified.
   Modifying, decompiling or reusing this code, removing this notice, or commercial use
@@ -723,6 +723,27 @@ body.mobile #mobCatBtn .mob-cat-lbl { position: absolute; top: -1px; left: 8px; 
 .pl-table td, .pl-table th { padding: 2px 6px; }
 .pl-stats { max-height: 260px; overflow-y: auto; margin: 6px 0; }
 .pl-est { margin: 6px 0; line-height: 1.5; }
+
+/* ---- v1.4.9.3：网格 / 平板分区合并菜单 ---- */
+#btnGrid .caret { font-size: 10px; margin-left: 1px; opacity: .7; }
+.guide-menu { width: 330px; max-width: calc(100vw - 16px); padding: 6px; }
+.guide-menu .gd-sec + .gd-sec { border-top: 1px solid #eee; margin-top: 6px; padding-top: 6px; }
+.guide-menu .gd-head { font-weight: 600; color: #333; padding: 2px 4px 4px; }
+.guide-menu .gd-row { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 4px; }
+.guide-menu .gd-row button { width: auto; flex: 1 1 auto; justify-content: center; border: 1px solid #d0d7de; background: #f6f8fa; padding: 6px 8px; }
+.guide-menu .gd-pre button { flex: 1 1 18%; font-size: 12px; padding: 5px 4px; }
+.guide-menu .gd-row button:hover:not(:disabled):not(.active) { background: #e8f0fe; }
+.guide-menu .gd-row button.active { background: #1e88e5; border-color: #1565c0; color: #fff; }
+.guide-menu .gd-row button:disabled { opacity: .45; }
+.guide-menu .gd-how { font-size: 12px; color: #555; background: #e8f0fe; border-left: 3px solid #1e88e5; border-radius: 4px; padding: 5px 7px; margin: 2px 0 4px; line-height: 1.4; }
+.guide-menu .gd-more { color: #1565c0; font-size: 12px; justify-content: flex-start; }
+#guideBar { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); z-index: 20; display: flex; align-items: center; gap: 10px;
+  max-width: calc(100% - 24px); background: #1e88e5; color: #fff; border-radius: 20px; padding: 6px 6px 6px 14px; box-shadow: 0 2px 8px rgba(0,0,0,.25); font-size: 13px; }
+#guideBar[hidden] { display: none; }
+#guideBar .gb-text { flex: 1 1 auto; min-width: 0; }
+body.mobile #guideBar { width: calc(100% - 24px); border-radius: 14px; }
+#guideBar .gb-done { background: #fff; color: #1565c0; border: none; border-radius: 16px; padding: 5px 14px; font-weight: 600; white-space: nowrap; }
+body.mobile .guide-menu .gd-row button { padding: 9px 8px; }
 </style>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -754,7 +775,7 @@ body.mobile #mobCatBtn .mob-cat-lbl { position: absolute; top: -1px; left: 8px; 
     <button id="btnImageMenu" data-icon="imageEdit" data-i18n-title="imageMenuTip"><span data-i18n="imageMenu"></span> ▾</button>
     <button class="toggle" data-cmd="toggleTools" data-icon="adjust" data-i18n-title="toolsPanelTip"><span data-i18n="toolsPanel"></span></button>
     <button id="btnLoupe" class="toggle icon-only" data-cmd="toggleLoupe" data-icon="loupe" data-i18n-title="loupeTip"></button>
-    <button id="btnGrid" class="toggle icon-only" data-cmd="toggleGrid" data-icon="grid" data-i18n-title="gridTip"></button>
+    <button id="btnGrid" class="toggle icon-only" data-cmd="toggleGrid" data-icon="grid" data-i18n-title="gridTip"><span class="caret">▾</span></button>
   </div>
   <div class="group">
     <button class="icon-only" data-cmd="zoomOut" data-icon="zoomOut" data-i18n-title="zoomOut"></button>
@@ -803,6 +824,7 @@ body.mobile #mobCatBtn .mob-cat-lbl { position: absolute; top: -1px; left: 8px; 
   <section id="stage">
     <canvas id="baseCanvas" aria-hidden="true"></canvas>
     <canvas id="canvas"></canvas>
+    <div id="guideBar" hidden><span class="gb-text"></span><button class="gb-done primary"></button></div>
     <div id="dropHint"><button id="bigAddImages" class="primary big-add" data-act="importImages"><span class="big-plus">＋</span><span data-i18n="addImagesBig"></span></button><div class="drop-text" data-i18n="dropHint"></div></div>
     <div id="cropBar" class="crop-bar" hidden>
       <span id="cropInfo"></span>
@@ -974,6 +996,7 @@ body.mobile #mobCatBtn .mob-cat-lbl { position: absolute; top: -1px; left: 8px; 
 <div id="lineFly" class="flyout" hidden></div>
 <div id="imageMenu" class="ctx-menu image-menu" hidden></div>
 <div id="statsMenu" class="ctx-menu stats-menu" hidden></div>
+<div id="guideMenu" class="ctx-menu guide-menu" hidden></div>
 <div id="tplMenu" class="ctx-menu stats-menu tpl-menu" hidden></div>
 <input type="file" id="tplInput" hidden accept=".json,application/json">
 <div id="roiFly" class="flyout" hidden></div>
@@ -1052,7 +1075,7 @@ body.mobile #mobCatBtn .mob-cat-lbl { position: absolute; top: -1px; left: 8px; 
 
 <script>
 /*!
- * Counting Helper v1.4.9.2
+ * Counting Helper v1.4.9.3
  * Copyright (c) 2026 Sida Li. All rights reserved. 保留所有权利。
  * Free for non-commercial research and teaching; may be shared unmodified.
  * Modifying, decompiling or reusing this code, removing this notice, or commercial use
@@ -7178,6 +7201,126 @@ I18N.ko = {
   }
 })();
 
+// ===== i18n-v1493.js =====
+// ---------------------------------------------------------------------------
+// i18n-v1493.js — v1.4.9.3：网格 / 平板分区合并按钮（7 种语言；西 / 葡的部分说明与帮助正文暂用英文）
+// （由脚本生成；繁體中文由简体经 OpenCC s2twp 转换）
+// ---------------------------------------------------------------------------
+(function () {
+  const add = {
+ "zh": {
+  "gridTip": "网格 / 平板分区：显示、隐藏、移动",
+  "gdShown": "● 显示中",
+  "gdHidden": "○ 已隐藏",
+  "gdMore": "更多设置…",
+  "gdGridHow": "移动：点「✥ 移动网格」后在图上拖动；完成后点顶部「✓ 完成」。",
+  "gdPlateHow": "移动 / 调整：点「✥ 移动 / 调整」后，拖圆心 = 移动，拖圆边 = 大小，拖橙色点 = 旋转；完成后点顶部「✓ 完成」。",
+  "gdBarGrid": "✥ 正在移动网格：在图上拖动",
+  "gdBarPlate": "✥ 正在调整平板分区：拖圆心移动 · 拖圆边改大小 · 拖橙色点旋转",
+  "gdBarPick": "☑ 正在点选扇区：单击扇区计入 / 取消",
+  "gdDone": "✓ 完成",
+  "tour_guides_t": "网格与平板分区",
+  "tour_guides": "<p>这个按钮里可以直接<b>显示 / 隐藏</b>网格和平板分区、选择 1/2、1/4、1/8、1/16 分割，以及<b>移动</b>它们（蓝色 = 当前开启）。</p><p>电脑上把鼠标移到按钮上即可展开；手机上点一下。</p>",
+  "_help": "<h3>网格 / 平板分区按钮（v1.4.9.3）</h3><ul><li>工具栏的网格按钮现在合并了网格和平板分区：电脑上鼠标移上去、手机上点一下即可展开菜单。</li><li>菜单里可以显示 / 隐藏、选等分方式、进入「移动」模式；当前开启的项目以蓝色高亮。</li><li>移动时画面顶部有提示条，点「✓ 完成」（或按 Esc）结束。</li></ul>"
+ },
+ "zh-Hant": {
+  "gridTip": "網格 / 平板分割槽：顯示、隱藏、移動",
+  "gdShown": "● 顯示中",
+  "gdHidden": "○ 已隱藏",
+  "gdMore": "更多設定…",
+  "gdGridHow": "移動：點「✥ 移動網格」後在圖上拖動；完成後點頂部「✓ 完成」。",
+  "gdPlateHow": "移動 / 調整：點「✥ 移動 / 調整」後，拖圓心 = 移動，拖圓邊 = 大小，拖橙色點 = 旋轉；完成後點頂部「✓ 完成」。",
+  "gdBarGrid": "✥ 正在移動網格：在圖上拖動",
+  "gdBarPlate": "✥ 正在調整平板分割槽：拖圓心移動 · 拖圓邊改大小 · 拖橙色點旋轉",
+  "gdBarPick": "☑ 正在點選扇區：單擊扇區計入 / 取消",
+  "gdDone": "✓ 完成",
+  "tour_guides_t": "網格與平板分割槽",
+  "tour_guides": "<p>這個按鈕裡可以直接<b>顯示 / 隱藏</b>網格和平板分割槽、選擇 1/2、1/4、1/8、1/16 分割，以及<b>移動</b>它們（藍色 = 當前開啟）。</p><p>電腦上把滑鼠移到按鈕上即可展開；手機上點一下。</p>",
+  "_help": "<h3>網格 / 平板分割槽按鈕（v1.4.9.3）</h3><ul><li>工具欄的網格按鈕現在合併了網格和平板分割槽：電腦上滑鼠移上去、手機上點一下即可展開選單。</li><li>選單裡可以顯示 / 隱藏、選等分方式、進入「移動」模式；當前開啟的專案以藍色高亮。</li><li>移動時畫面頂部有提示條，點「✓ 完成」（或按 Esc）結束。</li></ul>"
+ },
+ "en": {
+  "gridTip": "Grid / plate sectors: show, hide, move",
+  "gdShown": "● Shown",
+  "gdHidden": "○ Hidden",
+  "gdMore": "More settings…",
+  "gdGridHow": "To move: click “✥ Move grid”, then drag on the image; click “✓ Done” at the top when finished.",
+  "gdPlateHow": "To move / resize: click “✥ Move / resize”, then drag the centre to move, the rim to resize, the orange dot to rotate; click “✓ Done” at the top when finished.",
+  "gdBarGrid": "✥ Moving grid: drag on the image",
+  "gdBarPlate": "✥ Adjusting plate sectors: drag centre to move · rim to resize · orange dot to rotate",
+  "gdBarPick": "☑ Picking sectors: click a sector to include / exclude",
+  "gdDone": "✓ Done",
+  "tour_guides_t": "Grid and plate sectors",
+  "tour_guides": "<p>This button lets you <b>show / hide</b> the grid and plate sectors, choose 1/2, 1/4, 1/8 or 1/16 divisions, and <b>move</b> them (blue = currently on).</p><p>On a computer hover over it; on a phone tap it.</p>",
+  "_help": "<h3>Grid / plate sectors button (v1.4.9.3)</h3><ul><li>The grid button in the toolbar now combines the grid and plate sectors: hover (computer) or tap (phone) to open its menu.</li><li>In the menu you can show / hide, choose a division and enter “move” mode; whatever is on is highlighted in blue.</li><li>While moving, a bar at the top of the image shows what to do; click “✓ Done” (or press Esc) to finish.</li></ul>"
+ },
+ "es": {
+  "gridTip": "Cuadrícula / sectores de placa: mostrar, ocultar, mover",
+  "gdShown": "● Visible",
+  "gdHidden": "○ Oculto",
+  "gdMore": "Más ajustes…",
+  "gdGridHow": "To move: click “✥ Move grid”, then drag on the image; click “✓ Done” at the top when finished.",
+  "gdPlateHow": "To move / resize: click “✥ Move / resize”, then drag the centre to move, the rim to resize, the orange dot to rotate; click “✓ Done” at the top when finished.",
+  "gdBarGrid": "✥ Moviendo la cuadrícula: arrastre sobre la imagen",
+  "gdBarPlate": "✥ Ajustando sectores: arrastre el centro para mover · el borde para redimensionar · el punto naranja para girar",
+  "gdBarPick": "☑ Elegir sectores: haga clic en un sector para incluirlo / excluirlo",
+  "gdDone": "✓ Hecho",
+  "tour_guides_t": "Cuadrícula y sectores de placa",
+  "tour_guides": "<p>This button lets you <b>show / hide</b> the grid and plate sectors, choose 1/2, 1/4, 1/8 or 1/16 divisions, and <b>move</b> them (blue = currently on).</p><p>On a computer hover over it; on a phone tap it.</p>",
+  "_help": "<h3>Grid / plate sectors button (v1.4.9.3)</h3><ul><li>The grid button in the toolbar now combines the grid and plate sectors: hover (computer) or tap (phone) to open its menu.</li><li>In the menu you can show / hide, choose a division and enter “move” mode; whatever is on is highlighted in blue.</li><li>While moving, a bar at the top of the image shows what to do; click “✓ Done” (or press Esc) to finish.</li></ul>"
+ },
+ "pt": {
+  "gridTip": "Grade / setores da placa: mostrar, ocultar, mover",
+  "gdShown": "● Visível",
+  "gdHidden": "○ Oculto",
+  "gdMore": "Mais ajustes…",
+  "gdGridHow": "To move: click “✥ Move grid”, then drag on the image; click “✓ Done” at the top when finished.",
+  "gdPlateHow": "To move / resize: click “✥ Move / resize”, then drag the centre to move, the rim to resize, the orange dot to rotate; click “✓ Done” at the top when finished.",
+  "gdBarGrid": "✥ Movendo a grade: arraste sobre a imagem",
+  "gdBarPlate": "✥ Ajustando setores: arraste o centro para mover · a borda para redimensionar · o ponto laranja para girar",
+  "gdBarPick": "☑ Escolher setores: clique num setor para incluir / excluir",
+  "gdDone": "✓ Concluir",
+  "tour_guides_t": "Grade e setores da placa",
+  "tour_guides": "<p>This button lets you <b>show / hide</b> the grid and plate sectors, choose 1/2, 1/4, 1/8 or 1/16 divisions, and <b>move</b> them (blue = currently on).</p><p>On a computer hover over it; on a phone tap it.</p>",
+  "_help": "<h3>Grid / plate sectors button (v1.4.9.3)</h3><ul><li>The grid button in the toolbar now combines the grid and plate sectors: hover (computer) or tap (phone) to open its menu.</li><li>In the menu you can show / hide, choose a division and enter “move” mode; whatever is on is highlighted in blue.</li><li>While moving, a bar at the top of the image shows what to do; click “✓ Done” (or press Esc) to finish.</li></ul>"
+ },
+ "ja": {
+  "gridTip": "グリッド / プレート分割：表示・非表示・移動",
+  "gdShown": "● 表示中",
+  "gdHidden": "○ 非表示",
+  "gdMore": "詳細設定…",
+  "gdGridHow": "移動：「✥ グリッドを移動」を押して画像上をドラッグ。終わったら上部の「✓ 完了」。",
+  "gdPlateHow": "移動 / 調整：「✥ 移動 / サイズ変更」を押し、中心をドラッグ = 移動、円周 = 大きさ、オレンジの点 = 回転。終わったら上部の「✓ 完了」。",
+  "gdBarGrid": "✥ グリッドを移動中：画像上をドラッグ",
+  "gdBarPlate": "✥ プレート分割を調整中：中心で移動 · 円周で大きさ · オレンジの点で回転",
+  "gdBarPick": "☑ セクター選択中：クリックで計数に含める / 外す",
+  "gdDone": "✓ 完了",
+  "tour_guides_t": "グリッドとプレート分割",
+  "tour_guides": "<p>このボタンでグリッドとプレート分割の<b>表示 / 非表示</b>、1/2・1/4・1/8・1/16 の分割、<b>移動</b>ができます（青 = オン）。</p><p>パソコンではマウスを重ねる、スマホではタップで開きます。</p>",
+  "_help": "<h3>Grid / plate sectors button (v1.4.9.3)</h3><ul><li>The grid button in the toolbar now combines the grid and plate sectors: hover (computer) or tap (phone) to open its menu.</li><li>In the menu you can show / hide, choose a division and enter “move” mode; whatever is on is highlighted in blue.</li><li>While moving, a bar at the top of the image shows what to do; click “✓ Done” (or press Esc) to finish.</li></ul>"
+ },
+ "ko": {
+  "gridTip": "격자 / 평판 분할: 표시, 숨기기, 이동",
+  "gdShown": "● 표시 중",
+  "gdHidden": "○ 숨김",
+  "gdMore": "추가 설정…",
+  "gdGridHow": "이동: 「✥ 격자 이동」을 누른 뒤 이미지에서 드래그하고, 끝나면 위쪽 「✓ 완료」.",
+  "gdPlateHow": "이동 / 조정: 「✥ 이동 / 크기」를 누른 뒤 중심 = 이동, 테두리 = 크기, 주황색 점 = 회전. 끝나면 위쪽 「✓ 완료」.",
+  "gdBarGrid": "✥ 격자 이동 중: 이미지에서 드래그",
+  "gdBarPlate": "✥ 평판 분할 조정 중: 중심 이동 · 테두리 크기 · 주황색 점 회전",
+  "gdBarPick": "☑ 구역 선택 중: 클릭하여 포함 / 제외",
+  "gdDone": "✓ 완료",
+  "tour_guides_t": "격자와 평판 분할",
+  "tour_guides": "<p>이 버튼에서 격자와 평판 분할을 <b>표시 / 숨기기</b>, 1/2·1/4·1/8·1/16 분할 선택, <b>이동</b>할 수 있습니다(파란색 = 켜짐).</p><p>컴퓨터는 마우스를 올리고, 휴대폰은 탭하세요.</p>",
+  "_help": "<h3>Grid / plate sectors button (v1.4.9.3)</h3><ul><li>The grid button in the toolbar now combines the grid and plate sectors: hover (computer) or tap (phone) to open its menu.</li><li>In the menu you can show / hide, choose a division and enter “move” mode; whatever is on is highlighted in blue.</li><li>While moving, a bar at the top of the image shows what to do; click “✓ Done” (or press Esc) to finish.</li></ul>"
+ }
+};
+  for (const [lang, d] of Object.entries(add)) {
+    const L = I18N[lang];
+    for (const [k, v] of Object.entries(d)) if (k[0] !== '_') L[k] = v;
+    L.helpHtml += d._help;
+  }
+})();
+
 // ===== util.js =====
 // ---------------------------------------------------------------------------
 // util.js — 通用工具函数
@@ -7432,6 +7575,7 @@ const TOUR_STEPS = [
   { key: 'cats', target: ['#mobCatBtn', '#catSection', '#btnSidePanel'] },
   { key: 'folders', target: ['[data-cmd="toggleFolders"]'] },
   { key: 'grid', target: ['[data-cmd="toggleTools"]'] },
+  { key: 'guides', target: ['#btnGrid'] },
   { key: 'image', target: ['#btnImageMenu'] },
   { key: 'stats', target: ['#btnStats'] },
   { key: 'tpl', target: ['#btnTpl'] },
@@ -8161,7 +8305,7 @@ async function inflate(u8) {
 // 命令是纯数据（可序列化为 JSON），随项目文件一起保存，重新打开项目后仍可撤回。
 // 坐标单位：图片原始像素。尺寸单位："u" = max(图宽, 图高)/1000 像素。
 // ---------------------------------------------------------------------------
-const APP_VERSION = '1.4.9.2';
+const APP_VERSION = '1.4.9.3';
 const FORMAT_ID = 'counting-tool-project';          // v1.0：单张图片的 .mark.json
 const WS_FORMAT_ID = 'counting-tool-workspace';     // v1.1 起：多图项目 .mark.zip
 const WS_FORMAT_VERSION = 5;   // v1.3：图形对象 shape、标记单独大小 mw/mh、图层顺序、锁定
@@ -11717,8 +11861,9 @@ function setGridMove(on) {
   on = !!on && !!state.doc && gridOn(state.doc);
   if (!!state.gridMove === on) return;
   state.gridMove = on;
+  if (on && state.plateMode) { state.plateMode = null; updatePlateControls(); }
   $$('#cellMoveGrid, #grMove').forEach(b => b.classList.toggle('active', on));
-  if (on) toast(t('gridMoveHint'), 4000);
+  updateGuides();
   if (typeof updateCursor === 'function') updateCursor();
   requestRender();
 }
@@ -12315,9 +12460,9 @@ function setPlateMode(mode) {
   state.plateMode = state.plateMode === mode ? null : mode;
   if (state.plateMode && state.gridMove) setGridMove(false);
   if (state.plateMode === 'pick' && state.tool !== 'select') setTool('select');
-  if (state.plateMode) toast(t(state.plateMode === 'move' ? 'plateMoveHint' : 'platePickHint'), 4000);
   if (typeof updateCursor === 'function') updateCursor();
   updatePlateControls();
+  updateGuides();
   requestRender();
 }
 
@@ -12403,6 +12548,114 @@ function updatePlateControls() {
     <div class="btn-row"><button class="small" data-plall="all">${escapeHtml(t('plateAll'))}</button><button class="small" data-plall="none">${escapeHtml(t('plateNone'))}</button></div>
     <div class="pl-est">${escapeHtml(t('plateEstLine', { k: S.used.length, n: S.n, c: S.sumC }))}<br><b>${escapeHtml(t('plateEstimate'))}: ${Number.isFinite(S.estimate) ? +S.estimate.toFixed(1) : '—'}</b></div>
     <div class="muted small">${escapeHtml(t('plateMeanSd', { m: f2(S.mean), s: f2(S.sd) }))}${Number.isFinite(S.disp.p) ? ` · ${escapeHtml(t('cellDisp', { D: S.disp.D.toFixed(2), chi2: S.disp.chi2.toFixed(2), df: S.disp.df, p: S.disp.p < 0.0001 ? '<0.0001' : S.disp.p.toFixed(4) }))}` : ''}${S.outside ? ` · ${escapeHtml(t('plateOutside', { n: S.outside }))}` : ''}</div>`;
+}
+
+// ===== guides.js =====
+// ---------------------------------------------------------------------------
+// guides.js — v1.4.9.3：工具栏「网格 / 平板分区」合并按钮
+//
+// - 电脑：鼠标移到按钮上展开菜单；手机 / 触屏：点按钮展开 / 收起
+// - 菜单内直接显示 / 隐藏网格和平板分区、切换「移动」模式、选等分方式；当前状态用蓝色高亮
+// - 移动模式进行中：画面顶部显示提示条和「✓ 完成」按钮（手机上没有 Esc 键）
+// ---------------------------------------------------------------------------
+function guideMenuHtml() {
+  const doc = state.doc, has = !!doc;
+  const gOn = has && gridOn(doc), pOn = has && plateOn(doc), p = plateOf(doc);
+  const b = (attr, label, active, extra) => `<button data-gd="${attr}"${active ? ' class="active"' : ''}${!has || extra === false ? ' disabled' : ''}>${escapeHtml(label)}</button>`;
+  return `<div class="gd-sec"><div class="gd-head">${escapeHtml(t('tab_grid'))}</div>
+      <div class="gd-row">${b('grid', t(gOn ? 'gdShown' : 'gdHidden'), gOn)}${b('gridMove', t('gridMove'), !!state.gridMove, gOn)}</div>
+      <div class="gd-how">${escapeHtml(t('gdGridHow'))}</div>
+      <button class="gd-more" data-gd="gridMore">${escapeHtml(t('gdMore'))}</button></div>
+    <div class="gd-sec"><div class="gd-head">${escapeHtml(t('tab_plate'))}</div>
+      <div class="gd-row">${b('plate', t(pOn ? 'gdShown' : 'gdHidden'), pOn)}${b('plateMove', t('plateMove'), state.plateMode === 'move', pOn)}${b('platePick', t('platePick'), state.plateMode === 'pick', pOn)}</div>
+      <div class="gd-row gd-pre">${PLATE_PRESETS.map(pr => b('pre:' + pr.key, t('platePre_' + pr.key), pOn && p.n === pr.n && Math.round(p.rot) === pr.rot)).join('')}</div>
+      <div class="gd-how">${escapeHtml(t('gdPlateHow'))}</div>
+      <button class="gd-more" data-gd="plateMore">${escapeHtml(t('gdMore'))}</button></div>`;
+}
+
+function openToolsTab(tab) {
+  prefs.set('toolsTab', tab);
+  setPanelOpen('tools', true);
+  updateToolsPanel();
+}
+
+function guideAction(k) {
+  const doc = state.doc;
+  if (!doc) return;
+  if (k === 'grid') toggleGrid();
+  else if (k === 'gridMove') setGridMove(!state.gridMove);
+  else if (k === 'plate') { const on = !plateOn(doc); setPlate({ on }); if (!on && state.plateMode) setPlateMode(null); }
+  else if (k === 'plateMove') setPlateMode('move');
+  else if (k === 'platePick') setPlateMode('pick');
+  else if (k.startsWith('pre:')) { const pr = PLATE_PRESETS.find(x => x.key === k.slice(4)); setPlate({ on: true, n: pr.n, rot: pr.rot }); }
+  else if (k === 'gridMore') openToolsTab('grid');
+  else if (k === 'plateMore') openToolsTab('plate');
+  updateGuides();
+}
+
+// 按钮高亮 + 菜单内容 + 移动提示条
+function updateGuides() {
+  const doc = state.doc;
+  if (state.plateMode && !plateOn(doc)) state.plateMode = null;   // 换到没有分区的图片
+  const btn = $('#btnGrid');
+  if (btn) btn.classList.toggle('active', !!doc && (gridOn(doc) || plateOn(doc)));
+  const menu = $('#guideMenu');
+  if (menu && !menu.hidden) menu.innerHTML = guideMenuHtml();
+  const bar = $('#guideBar');
+  if (!bar) return;
+  const mode = state.gridMove ? 'grid' : state.plateMode === 'move' ? 'plateMove' : state.plateMode === 'pick' ? 'platePick' : null;
+  bar.hidden = !mode || !doc;
+  if (!bar.hidden) {
+    $('.gb-text', bar).textContent = t({ grid: 'gdBarGrid', plateMove: 'gdBarPlate', platePick: 'gdBarPick' }[mode]);
+    $('.gb-done', bar).textContent = t('gdDone');
+  }
+}
+
+function initGuides() {
+  const btn = $('#btnGrid'), menu = $('#guideMenu');
+  let timer = null;
+  const place = () => {
+    const r = btn.getBoundingClientRect();
+    const w = menu.offsetWidth || 300;
+    menu.style.left = Math.max(8, Math.min(r.left, innerWidth - w - 8)) + 'px';
+    const below = r.bottom + 2, h = menu.offsetHeight;
+    menu.style.top = (below + h > innerHeight - 8 && r.top - h - 2 > 8 ? r.top - h - 2 : below) + 'px';
+  };
+  const show = () => {
+    clearTimeout(timer);
+    if (!menu.hidden) return;
+    menu.innerHTML = guideMenuHtml();
+    menu.hidden = false;
+    place();
+  };
+  const hide = () => { clearTimeout(timer); timer = setTimeout(() => { menu.hidden = true; }, 260); };
+  const mouseOnly = (fn) => (e) => { if (e.pointerType === 'mouse') fn(); };
+  btn.addEventListener('pointerenter', mouseOnly(show));
+  btn.addEventListener('pointerleave', mouseOnly(hide));
+  menu.addEventListener('pointerenter', mouseOnly(show));
+  menu.addEventListener('pointerleave', mouseOnly(hide));
+  // 单击按钮：展开菜单（不再直接开关网格）；触屏再点一次收起。鼠标悬停时已经展开，点击不收起
+  let lastPointer = 'mouse';
+  btn.addEventListener('pointerdown', (e) => { lastPointer = e.pointerType; });
+  btn.addEventListener('click', (e) => {
+    e.stopImmediatePropagation();
+    if (menu.hidden) show(); else if (lastPointer !== 'mouse') menu.hidden = true;
+  }, true);
+  document.addEventListener('pointerdown', (e) => { if (!menu.hidden && !e.target.closest('#guideMenu, #btnGrid')) menu.hidden = true; });
+  menu.addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-gd]');
+    if (!b || b.disabled) return;
+    const k = b.dataset.gd;
+    guideAction(k);
+    // 进入移动 / 点选模式或打开设置面板后收起菜单，方便直接在图上拖动
+    if (['gridMove', 'plateMove', 'platePick', 'gridMore', 'plateMore'].includes(k)) menu.hidden = true;
+    else place();
+  });
+  $('#guideBar .gb-done').addEventListener('click', () => {
+    if (state.gridMove) setGridMove(false);
+    if (state.plateMode) setPlateMode(null);
+    updateGuides();
+  });
 }
 
 // ===== detect.js =====
@@ -18230,7 +18483,7 @@ function updateToggles() {
   $('#btnMarks').classList.toggle('active', state.showAnnotations);
   $('#btnNumbers').classList.toggle('active', state.showNumbers);
   $('#btnLoupe').classList.toggle('active', !!state.loupe.on);
-  $('#btnGrid').classList.toggle('active', gridOn(state.doc));
+  updateGuides();
 }
 
 function toggleAnnotations(force) {
@@ -18646,7 +18899,7 @@ function setLanguage(lang) {
   $('#appVersion').textContent = 'v' + APP_VERSION;
   updateCopyright();
   checkRecovery();
-  initImporter();
+  initImporter(); initGuides();
   initMobileCat();
   initTour();
 

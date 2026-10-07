@@ -1,6 +1,6 @@
 // Counting Helper — Service Worker（网页版 / 添加到主屏幕后离线可用）
 // 联网时优先取最新版本（更新会自动生效），离线时用缓存。
-const CACHE = 'counting-helper-1.4.9.2';
+const CACHE = 'counting-helper-1.4.9.3';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
