@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Counting Helper v1.4.9.1
+  Counting Helper v1.4.9.2
   Copyright (c) 2026 Sida Li. All rights reserved. 保留所有权利。
   Free for non-commercial research and teaching; may be shared unmodified.
   Modifying, decompiling or reusing this code, removing this notice, or commercial use
@@ -1052,7 +1052,7 @@ body.mobile #mobCatBtn .mob-cat-lbl { position: absolute; top: -1px; left: 8px; 
 
 <script>
 /*!
- * Counting Helper v1.4.9.1
+ * Counting Helper v1.4.9.2
  * Copyright (c) 2026 Sida Li. All rights reserved. 保留所有权利。
  * Free for non-commercial research and teaching; may be shared unmodified.
  * Modifying, decompiling or reusing this code, removing this notice, or commercial use
@@ -8161,7 +8161,7 @@ async function inflate(u8) {
 // 命令是纯数据（可序列化为 JSON），随项目文件一起保存，重新打开项目后仍可撤回。
 // 坐标单位：图片原始像素。尺寸单位："u" = max(图宽, 图高)/1000 像素。
 // ---------------------------------------------------------------------------
-const APP_VERSION = '1.4.9.1';
+const APP_VERSION = '1.4.9.2';
 const FORMAT_ID = 'counting-tool-project';          // v1.0：单张图片的 .mark.json
 const WS_FORMAT_ID = 'counting-tool-workspace';     // v1.1 起：多图项目 .mark.zip
 const WS_FORMAT_VERSION = 5;   // v1.3：图形对象 shape、标记单独大小 mw/mh、图层顺序、锁定
@@ -8221,8 +8221,29 @@ function defaultCategories() {
   return [{ id: 'c1', name: t('defaultCatName', { n: 1 }), color: '#e53935', shape: 'circle', size: 10 }];
 }
 
+// 默认类别名（「类别 1」「Category 1」…）随界面语言翻译；用户自己改过的名字不动
+function defaultCatIndex(name) {
+  for (const L of Object.keys(I18N)) {
+    const tpl = I18N[L] && I18N[L].defaultCatName;
+    if (!tpl) continue;
+    const re = new RegExp('^' + tpl.replace(/[.*+?^$()|[\]\\]/g, '\\$&').replace('{n}', '(\\d+)') + '$');
+    const m = re.exec(String(name || '').trim());
+    if (m) return +m[1];
+  }
+  return 0;
+}
+function localizeCatNames(cats) {
+  let changed = false;
+  for (const c of cats || []) {
+    const n = defaultCatIndex(c.name), nm = n && t('defaultCatName', { n });
+    if (n && nm !== c.name) { c.name = nm; changed = true; }
+  }
+  return changed;
+}
+
 function newWorkspace(categories) {
   const cats = clone(categories && categories.length ? categories : defaultCategories());
+  localizeCatNames(cats);
   let n = 1;
   cats.forEach(c => { c.id = 'c' + n++; });
   return {
@@ -14322,6 +14343,7 @@ function buildWorkspace(meta, getBlob, getAssetBlob) {
     tplDefaults: meta.tplDefaults || null,
     structVersion: 0, savedStructVersion: 0
   };
+  localizeCatNames(ws.categories);   // 默认类别名随当前界面语言
   for (const am of meta.assets || []) {
     const blob = getAssetBlob ? getAssetBlob(am) : null;
     if (!blob) { console.warn('missing asset', am.id); continue; }
@@ -18572,6 +18594,9 @@ function setLanguage(lang) {
   state.settings.lang = lang;
   prefs.set('settings', state.settings);
   applyI18n();
+  if (state.ws) localizeCatNames(state.ws.categories);
+  const lc = prefs.get('lastCategories', null);
+  if (lc && localizeCatNames(lc)) prefs.set('lastCategories', lc);
   lastCatSig = null;
   editorKey = null;
   $('#langSelect').value = lang;
