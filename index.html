@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Counting Helper v1.4.14
+  Counting Helper v1.4.15
   Copyright (c) 2026 Sida Li. All rights reserved. 保留所有权利。
   Free for non-commercial research and teaching; may be shared unmodified.
   Modifying, decompiling or reusing this code, removing this notice, or commercial use
@@ -1263,6 +1263,19 @@ body.mobile #taskCard { bottom: 130px; }
 .temp-warn-btns { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
 .temp-warn-btns a.btn { background: #1a73e8; color: #fff; border-radius: 6px; padding: 4px 10px; text-decoration: none; }
 .temp-warn-btns button { background: #eceff3; color: #1d1d1f; border: 1px solid #cfd4da; border-radius: 6px; }
+
+/* v1.4.14：AI 面板顶部内置模型按钮 */
+.ai-quick { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 6px 0 8px; border-bottom: 1px solid var(--line, #3a3f47); margin-bottom: 6px; }
+.ai-quick-btn { background: linear-gradient(135deg, #ff7043, #ffb300); color: #fff; border: 0; border-radius: 8px; padding: 6px 10px; font-weight: 600; cursor: pointer; }
+.ai-quick-btn:hover { filter: brightness(1.08); }
+.ai-quick .small { flex-basis: 100%; }
+
+/* v1.4.15：图像调整窗口 */
+.adj-panel { width: 280px; }
+.adj-panel .adj-row { display: grid; grid-template-columns: 4.6em 1fr 2.6em; align-items: center; gap: 6px; margin: 4px 0; font-size: 13px; }
+.adj-panel .adj-row b { text-align: right; font-weight: 500; font-variant-numeric: tabular-nums; }
+.adj-panel input[type=range] { width: 100%; }
+.adj-panel .adj-btns { display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0 4px; }
 </style>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -1317,6 +1330,7 @@ body.mobile #taskCard { bottom: 130px; }
   <div class="group">
     <button class="toggle" data-cmd="toggleFolders" data-icon="folder" data-i18n-title="toggleFoldersTip"><span data-i18n="folders"></span></button>
     <button class="toggle ai-btn" data-cmd="toggleAi" data-icon="ai" data-i18n-title="toggleAiTip"><span data-i18n="aiShort"></span></button>
+    <button class="toggle" data-cmd="toggleAdj" data-i18n-title="c25_adjTip">🎨 <span data-i18n="c25_adjShort"></span></button>
     <button class="toggle" data-cmd="toggleLive" data-icon="live" data-i18n-title="c10_liveTip"><span data-i18n="c10_liveShort"></span></button>
     <button class="toggle" data-cmd="toggleHints" data-icon="keyboard" data-i18n-title="toggleHintsTip"><span data-i18n="hints"></span></button>
     <label class="lang-select" data-i18n-title="language" data-icon="lang"><select id="langSelect">
@@ -1514,6 +1528,15 @@ body.mobile #taskCard { bottom: 130px; }
       <div class="fp-body" id="quickBody"></div>
     </div>
 
+    <div id="adjPanel" class="float-panel adj-panel">
+      <div class="fp-head">
+        <span class="fp-title" data-i18n="c25_adjTitle"></span>
+        <span class="spacer"></span>
+        <button class="icon-btn fp-collapse" data-i18n-title="collapse">▾</button>
+        <button class="icon-btn fp-close" data-i18n-title="hidePanel">×</button>
+      </div>
+      <div class="fp-body" id="adjBody"></div>
+    </div>
     <div id="livePanel" class="float-panel live-panel">
       <div class="fp-head">
         <span class="fp-title" data-i18n="c10_liveTitle"></span>
@@ -1764,7 +1787,7 @@ body.mobile #taskCard { bottom: 130px; }
 
 <script>
 /*!
- * Counting Helper v1.4.14
+ * Counting Helper v1.4.15
  * Copyright (c) 2026 Sida Li. All rights reserved. 保留所有权利。
  * Free for non-commercial research and teaching; may be shared unmodified.
  * Modifying, decompiling or reusing this code, removing this notice, or commercial use
@@ -15647,7 +15670,7 @@ I18N.ko = {
   "wn_hello_t": "Counting Helper 更新啦！",
   "wn_hello": "<p>这一版最大的变化：<b>AI 会自己数蚊卵和卵囊了</b>。</p><ul><li>🦟 蚊卵：单个、重叠、成团都能数</li><li>🔴 卵囊：汞溴红染色的中肠</li><li>🟧 拿不准的放进「待核」，你只要看一眼</li><li>🗂 多个项目随时切换，记录不丢</li></ul><p>花 30 秒看一下在哪里 👉</p>",
   "wn_ai_t": "一键自动数",
-  "wn_ai": "<p>打开 <b>AI</b> 面板 →「学习计数」→ <b>「自动数这张图」</b>。</p><p>软件按<b>类别名</b>选模型：类别叫「<b>卵</b>」就数蚊卵，叫「<b>卵囊</b>」就数卵囊。</p><p>每张图大约 10–20 秒，在后台算，不卡。</p>",
+  "wn_ai": "<p>打开 <b>AI</b> 面板，最上面有两个大按钮：<b>🦟 数蚊卵</b>、<b>🔴 数卵囊</b>，点一下就数当前这张图。</p><p>结果放进当前类别；软件会记住这个类别用哪个模型，下次在「学习计数」→「自动数这张图」也行。</p><p>每张图大约 10–20 秒，在后台算，不卡。</p>",
   "wn_review_t": "拿不准的不硬数",
   "wn_review": "<p>AI 有把握的点直接计数；拿不准的放进新类别 <b>「待核」</b>（橙色方块），<b>不算进总数</b>。</p><p>核对时选中这些点，改到「卵」/「卵囊」，或者删掉。核对完点 ✓，软件就在本机学这一张，越用越准。</p>",
   "wn_proj_t": "多个项目，记录不丢",
@@ -15665,6 +15688,11 @@ I18N.ko = {
   "c23_tempBody": "从微信等应用直接点开的 HTML 存在临时目录里，过一阵会被清理，进度也可能找不到。建议改用网页版（可添加到主屏幕，离线可用、自动更新），或先把 HTML 文件保存到手机的「文件」里再打开。",
   "c23_tempWeb": "打开网页版",
   "c23_tempOff": "不再提示",
+  "c24_countEgg": "数蚊卵",
+  "c24_countOocyst": "数卵囊",
+  "c24_into": "内置 AI 模型，结果放进当前类别「{cat}」；拿不准的进「待核」",
+  "c24_hint": "先打开一张图",
+  "aiProfEgg": "深色卵（简单方法）",
   "_help": "<h3>v1.4.14</h3><ul><li><b>新功能导览</b>：升级后第一次打开会用箭头一步步介绍新功能；随时可在本窗口顶部「✨ 新功能」再看。</li><li><b>图像已调整提示</b>：亮度 / 对比度 / 色阶或滤波、背景扣除打开时，状态栏显示「🎨 图像已调整」，点文字打开调整面板，点 ↺ 恢复原图（原图文件从不改动）。调整面板在工具栏「调整与辅助」→「调整」。</li><li><b>临时文件提醒</b>：从微信等应用直接点开的 HTML 是临时文件，会被清理；建议用网页版或先保存到手机。</li><li>图表默认标出不显著的比较（ns）。</li></ul>"
  },
  "zh-Hant": {
@@ -15675,7 +15703,7 @@ I18N.ko = {
   "wn_hello_t": "Counting Helper 更新啦！",
   "wn_hello": "<p>這一版最大的變化：<b>AI 會自己數蚊卵和卵囊了</b>。</p><ul><li>🦟 蚊卵：單個、重疊、成團都能數</li><li>🔴 卵囊：汞溴紅染色的中腸</li><li>🟧 拿不準的放進「待核」，你只要看一眼</li><li>🗂 多個專案隨時切換，記錄不丟</li></ul><p>花 30 秒看一下在哪裡 👉</p>",
   "wn_ai_t": "一鍵自動數",
-  "wn_ai": "<p>開啟 <b>AI</b> 面板 →「學習計數」→ <b>「自動數這張圖」</b>。</p><p>軟體按<b>類別名</b>選模型：類別叫「<b>卵</b>」就數蚊卵，叫「<b>卵囊</b>」就數卵囊。</p><p>每張圖大約 10–20 秒，在後臺算，不卡。</p>",
+  "wn_ai": "<p>開啟 <b>AI</b> 面板，最上面有兩個大按鈕：<b>🦟 數蚊卵</b>、<b>🔴 數卵囊</b>，點一下就數當前這張圖。</p><p>結果放進當前類別；軟體會記住這個類別用哪個模型，下次在「學習計數」→「自動數這張圖」也行。</p><p>每張圖大約 10–20 秒，在後臺算，不卡。</p>",
   "wn_review_t": "拿不準的不硬數",
   "wn_review": "<p>AI 有把握的點直接計數；拿不準的放進新類別 <b>「待核」</b>（橙色方塊），<b>不算進總數</b>。</p><p>核對時選中這些點，改到「卵」/「卵囊」，或者刪掉。核對完點 ✓，軟體就在本機學這一張，越用越準。</p>",
   "wn_proj_t": "多個專案，記錄不丟",
@@ -15693,6 +15721,11 @@ I18N.ko = {
   "c23_tempBody": "從微信等應用直接點開的 HTML 存在臨時目錄裡，過一陣會被清理，進度也可能找不到。建議改用網頁版（可新增到主螢幕，離線可用、自動更新），或先把 HTML 檔案儲存到手機的「檔案」裡再開啟。",
   "c23_tempWeb": "開啟網頁版",
   "c23_tempOff": "不再提示",
+  "c24_countEgg": "數蚊卵",
+  "c24_countOocyst": "數卵囊",
+  "c24_into": "內建 AI 模型，結果放進當前類別「{cat}」；拿不準的進「待核」",
+  "c24_hint": "先開啟一張圖",
+  "aiProfEgg": "深色卵（簡單方法）",
   "_help": "<h3>v1.4.14</h3><ul><li><b>新功能導覽</b>：升級後第一次開啟會用箭頭一步步介紹新功能；隨時可在本視窗頂部「✨ 新功能」再看。</li><li><b>影象已調整提示</b>：亮度 / 對比度 / 色階或濾波、背景扣除開啟時，狀態列顯示「🎨 影象已調整」，點文字開啟調整面板，點 ↺ 恢復原圖（原圖檔案從不改動）。調整面板在工具欄「調整與輔助」→「調整」。</li><li><b>臨時檔案提醒</b>：從微信等應用直接點開的 HTML 是臨時檔案，會被清理；建議用網頁版或先儲存到手機。</li><li>圖表預設標出不顯著的比較（ns）。</li></ul>"
  },
  "en": {
@@ -15703,7 +15736,7 @@ I18N.ko = {
   "wn_hello_t": "Counting Helper has been updated!",
   "wn_hello": "<p>The biggest change: <b>the AI can now count mosquito eggs and oocysts for you</b>.</p><ul><li>🦟 Eggs: single, overlapping and clumped</li><li>🔴 Oocysts: mercurochrome-stained midguts</li><li>🟧 Unsure ones go to “To review” — just take a look</li><li>🗂 Several projects, switch any time, nothing lost</li></ul><p>Take 30 seconds to see where 👉</p>",
   "wn_ai_t": "Count with one click",
-  "wn_ai": "<p>Open the <b>AI</b> panel → “Learn” → <b>“Count this image”</b>.</p><p>The model is chosen by the <b>category name</b>: “<b>egg</b>” counts mosquito eggs, “<b>oocyst</b>” counts oocysts.</p><p>About 10–20 seconds per image, in the background.</p>",
+  "wn_ai": "<p>Open the <b>AI</b> panel. At the top there are two big buttons: <b>🦟 Count mosquito eggs</b> and <b>🔴 Count oocysts</b> — one click counts the current image.</p><p>Points go to the current category, and the app remembers which model that category uses.</p><p>About 10–20 seconds per image, in the background.</p>",
   "wn_review_t": "No forced guesses",
   "wn_review": "<p>Sure points are counted. Unsure ones go to a new category <b>“To review”</b> (orange squares) and are <b>not counted</b>.</p><p>Select them and move them to egg / oocyst, or delete them. Tick ✓ when done and the app learns from that image on your computer.</p>",
   "wn_proj_t": "Several projects, nothing lost",
@@ -15721,6 +15754,11 @@ I18N.ko = {
   "c23_tempBody": "An HTML file opened straight from a chat app (e.g. WeChat) sits in a temporary folder that is cleaned up later, and your progress may be lost with it. Use the web version (add to home screen; works offline and updates itself), or save the HTML file to your phone first and open it from there.",
   "c23_tempWeb": "Open web version",
   "c23_tempOff": "Don't show again",
+  "c24_countEgg": "Count mosquito eggs",
+  "c24_countOocyst": "Count oocysts",
+  "c24_into": "Built-in AI model; points go to the current category “{cat}”, unsure ones to “To review”",
+  "c24_hint": "Open an image first",
+  "aiProfEgg": "Dark eggs (simple method)",
   "_help": "<h3>v1.4.14</h3><ul><li><b>What's new tour</b>: after an update the app walks you through the new features once; replay it from “✨ What's new” at the top of this window.</li><li><b>Image adjusted chip</b>: when brightness / contrast / levels or filters are on, the status bar shows “🎨 Image adjusted”; tap the text to open the adjust panel, tap ↺ to show the original image (the original file is never changed). The panel is under “Adjust &amp; guides” → “Adjust”.</li><li><b>Temporary file notice</b>: HTML opened straight from a chat app is temporary and will be cleaned up — use the web version or save the file first.</li><li>Charts show non-significant comparisons (ns) by default.</li></ul>"
  },
  "es": {
@@ -15731,7 +15769,7 @@ I18N.ko = {
   "wn_hello_t": "¡Counting Helper se ha actualizado!",
   "wn_hello": "<p>The biggest change: <b>the AI can now count mosquito eggs and oocysts for you</b>.</p><ul><li>🦟 Eggs: single, overlapping and clumped</li><li>🔴 Oocysts: mercurochrome-stained midguts</li><li>🟧 Unsure ones go to “To review” — just take a look</li><li>🗂 Several projects, switch any time, nothing lost</li></ul><p>Take 30 seconds to see where 👉</p>",
   "wn_ai_t": "Contar con un clic",
-  "wn_ai": "<p>Open the <b>AI</b> panel → “Learn” → <b>“Count this image”</b>.</p><p>The model is chosen by the <b>category name</b>: “<b>egg</b>” counts mosquito eggs, “<b>oocyst</b>” counts oocysts.</p><p>About 10–20 seconds per image, in the background.</p>",
+  "wn_ai": "<p>Open the <b>AI</b> panel. At the top there are two big buttons: <b>🦟 Count mosquito eggs</b> and <b>🔴 Count oocysts</b> — one click counts the current image.</p><p>Points go to the current category, and the app remembers which model that category uses.</p><p>About 10–20 seconds per image, in the background.</p>",
   "wn_review_t": "Sin adivinar a la fuerza",
   "wn_review": "<p>Sure points are counted. Unsure ones go to a new category <b>“To review”</b> (orange squares) and are <b>not counted</b>.</p><p>Select them and move them to egg / oocyst, or delete them. Tick ✓ when done and the app learns from that image on your computer.</p>",
   "wn_proj_t": "Varios proyectos, nada se pierde",
@@ -15749,6 +15787,11 @@ I18N.ko = {
   "c23_tempBody": "An HTML file opened straight from a chat app (e.g. WeChat) sits in a temporary folder that is cleaned up later, and your progress may be lost with it. Use the web version (add to home screen; works offline and updates itself), or save the HTML file to your phone first and open it from there.",
   "c23_tempWeb": "Abrir versión web",
   "c23_tempOff": "No mostrar más",
+  "c24_countEgg": "Contar huevos de mosquito",
+  "c24_countOocyst": "Contar ooquistes",
+  "c24_into": "Modelo IA integrado; los puntos van a la categoría actual «{cat}», los dudosos a «Por revisar»",
+  "c24_hint": "Abra primero una imagen",
+  "aiProfEgg": "Huevos oscuros (método simple)",
   "_help": "<h3>v1.4.14</h3><ul><li><b>What's new tour</b>: after an update the app walks you through the new features once; replay it from “✨ What's new” at the top of this window.</li><li><b>Image adjusted chip</b>: when brightness / contrast / levels or filters are on, the status bar shows “🎨 Image adjusted”; tap the text to open the adjust panel, tap ↺ to show the original image (the original file is never changed). The panel is under “Adjust &amp; guides” → “Adjust”.</li><li><b>Temporary file notice</b>: HTML opened straight from a chat app is temporary and will be cleaned up — use the web version or save the file first.</li><li>Charts show non-significant comparisons (ns) by default.</li></ul>"
  },
  "pt": {
@@ -15759,7 +15802,7 @@ I18N.ko = {
   "wn_hello_t": "O Counting Helper foi atualizado!",
   "wn_hello": "<p>The biggest change: <b>the AI can now count mosquito eggs and oocysts for you</b>.</p><ul><li>🦟 Eggs: single, overlapping and clumped</li><li>🔴 Oocysts: mercurochrome-stained midguts</li><li>🟧 Unsure ones go to “To review” — just take a look</li><li>🗂 Several projects, switch any time, nothing lost</li></ul><p>Take 30 seconds to see where 👉</p>",
   "wn_ai_t": "Contar com um clique",
-  "wn_ai": "<p>Open the <b>AI</b> panel → “Learn” → <b>“Count this image”</b>.</p><p>The model is chosen by the <b>category name</b>: “<b>egg</b>” counts mosquito eggs, “<b>oocyst</b>” counts oocysts.</p><p>About 10–20 seconds per image, in the background.</p>",
+  "wn_ai": "<p>Open the <b>AI</b> panel. At the top there are two big buttons: <b>🦟 Count mosquito eggs</b> and <b>🔴 Count oocysts</b> — one click counts the current image.</p><p>Points go to the current category, and the app remembers which model that category uses.</p><p>About 10–20 seconds per image, in the background.</p>",
   "wn_review_t": "Sem palpites forçados",
   "wn_review": "<p>Sure points are counted. Unsure ones go to a new category <b>“To review”</b> (orange squares) and are <b>not counted</b>.</p><p>Select them and move them to egg / oocyst, or delete them. Tick ✓ when done and the app learns from that image on your computer.</p>",
   "wn_proj_t": "Vários projetos, nada se perde",
@@ -15777,6 +15820,11 @@ I18N.ko = {
   "c23_tempBody": "An HTML file opened straight from a chat app (e.g. WeChat) sits in a temporary folder that is cleaned up later, and your progress may be lost with it. Use the web version (add to home screen; works offline and updates itself), or save the HTML file to your phone first and open it from there.",
   "c23_tempWeb": "Abrir versão web",
   "c23_tempOff": "Não mostrar de novo",
+  "c24_countEgg": "Contar ovos de mosquito",
+  "c24_countOocyst": "Contar oocistos",
+  "c24_into": "Modelo de IA integrado; os pontos vão para a categoria atual “{cat}”, os incertos para “A revisar”",
+  "c24_hint": "Abra primeiro uma imagem",
+  "aiProfEgg": "Ovos escuros (método simples)",
   "_help": "<h3>v1.4.14</h3><ul><li><b>What's new tour</b>: after an update the app walks you through the new features once; replay it from “✨ What's new” at the top of this window.</li><li><b>Image adjusted chip</b>: when brightness / contrast / levels or filters are on, the status bar shows “🎨 Image adjusted”; tap the text to open the adjust panel, tap ↺ to show the original image (the original file is never changed). The panel is under “Adjust &amp; guides” → “Adjust”.</li><li><b>Temporary file notice</b>: HTML opened straight from a chat app is temporary and will be cleaned up — use the web version or save the file first.</li><li>Charts show non-significant comparisons (ns) by default.</li></ul>"
  },
  "ja": {
@@ -15787,7 +15835,7 @@ I18N.ko = {
   "wn_hello_t": "Counting Helper がアップデートされました！",
   "wn_hello": "<p>The biggest change: <b>the AI can now count mosquito eggs and oocysts for you</b>.</p><ul><li>🦟 Eggs: single, overlapping and clumped</li><li>🔴 Oocysts: mercurochrome-stained midguts</li><li>🟧 Unsure ones go to “To review” — just take a look</li><li>🗂 Several projects, switch any time, nothing lost</li></ul><p>Take 30 seconds to see where 👉</p>",
   "wn_ai_t": "ワンクリックで自動カウント",
-  "wn_ai": "<p>Open the <b>AI</b> panel → “Learn” → <b>“Count this image”</b>.</p><p>The model is chosen by the <b>category name</b>: “<b>egg</b>” counts mosquito eggs, “<b>oocyst</b>” counts oocysts.</p><p>About 10–20 seconds per image, in the background.</p>",
+  "wn_ai": "<p>Open the <b>AI</b> panel. At the top there are two big buttons: <b>🦟 Count mosquito eggs</b> and <b>🔴 Count oocysts</b> — one click counts the current image.</p><p>Points go to the current category, and the app remembers which model that category uses.</p><p>About 10–20 seconds per image, in the background.</p>",
   "wn_review_t": "自信がないものは数えない",
   "wn_review": "<p>Sure points are counted. Unsure ones go to a new category <b>“To review”</b> (orange squares) and are <b>not counted</b>.</p><p>Select them and move them to egg / oocyst, or delete them. Tick ✓ when done and the app learns from that image on your computer.</p>",
   "wn_proj_t": "複数のプロジェクト、記録は消えない",
@@ -15805,6 +15853,11 @@ I18N.ko = {
   "c23_tempBody": "An HTML file opened straight from a chat app (e.g. WeChat) sits in a temporary folder that is cleaned up later, and your progress may be lost with it. Use the web version (add to home screen; works offline and updates itself), or save the HTML file to your phone first and open it from there.",
   "c23_tempWeb": "Web 版を開く",
   "c23_tempOff": "今後表示しない",
+  "c24_countEgg": "蚊の卵を数える",
+  "c24_countOocyst": "オーシストを数える",
+  "c24_into": "内蔵 AI モデル。結果は現在のカテゴリ「{cat}」へ、不確かなものは「要確認」へ",
+  "c24_hint": "先に画像を開いてください",
+  "aiProfEgg": "暗い卵（簡易法）",
   "_help": "<h3>v1.4.14</h3><ul><li><b>What's new tour</b>: after an update the app walks you through the new features once; replay it from “✨ What's new” at the top of this window.</li><li><b>Image adjusted chip</b>: when brightness / contrast / levels or filters are on, the status bar shows “🎨 Image adjusted”; tap the text to open the adjust panel, tap ↺ to show the original image (the original file is never changed). The panel is under “Adjust &amp; guides” → “Adjust”.</li><li><b>Temporary file notice</b>: HTML opened straight from a chat app is temporary and will be cleaned up — use the web version or save the file first.</li><li>Charts show non-significant comparisons (ns) by default.</li></ul>"
  },
  "ko": {
@@ -15815,7 +15868,7 @@ I18N.ko = {
   "wn_hello_t": "Counting Helper가 업데이트되었습니다!",
   "wn_hello": "<p>The biggest change: <b>the AI can now count mosquito eggs and oocysts for you</b>.</p><ul><li>🦟 Eggs: single, overlapping and clumped</li><li>🔴 Oocysts: mercurochrome-stained midguts</li><li>🟧 Unsure ones go to “To review” — just take a look</li><li>🗂 Several projects, switch any time, nothing lost</li></ul><p>Take 30 seconds to see where 👉</p>",
   "wn_ai_t": "한 번에 자동 계수",
-  "wn_ai": "<p>Open the <b>AI</b> panel → “Learn” → <b>“Count this image”</b>.</p><p>The model is chosen by the <b>category name</b>: “<b>egg</b>” counts mosquito eggs, “<b>oocyst</b>” counts oocysts.</p><p>About 10–20 seconds per image, in the background.</p>",
+  "wn_ai": "<p>Open the <b>AI</b> panel. At the top there are two big buttons: <b>🦟 Count mosquito eggs</b> and <b>🔴 Count oocysts</b> — one click counts the current image.</p><p>Points go to the current category, and the app remembers which model that category uses.</p><p>About 10–20 seconds per image, in the background.</p>",
   "wn_review_t": "확실하지 않으면 세지 않음",
   "wn_review": "<p>Sure points are counted. Unsure ones go to a new category <b>“To review”</b> (orange squares) and are <b>not counted</b>.</p><p>Select them and move them to egg / oocyst, or delete them. Tick ✓ when done and the app learns from that image on your computer.</p>",
   "wn_proj_t": "여러 프로젝트, 기록 유지",
@@ -15833,7 +15886,279 @@ I18N.ko = {
   "c23_tempBody": "An HTML file opened straight from a chat app (e.g. WeChat) sits in a temporary folder that is cleaned up later, and your progress may be lost with it. Use the web version (add to home screen; works offline and updates itself), or save the HTML file to your phone first and open it from there.",
   "c23_tempWeb": "웹 버전 열기",
   "c23_tempOff": "다시 표시 안 함",
+  "c24_countEgg": "모기 알 세기",
+  "c24_countOocyst": "난포낭 세기",
+  "c24_into": "내장 AI 모델. 결과는 현재 범주 “{cat}”에, 불확실한 것은 “검토 필요”에",
+  "c24_hint": "먼저 이미지를 여세요",
+  "aiProfEgg": "어두운 알(간단한 방법)",
   "_help": "<h3>v1.4.14</h3><ul><li><b>What's new tour</b>: after an update the app walks you through the new features once; replay it from “✨ What's new” at the top of this window.</li><li><b>Image adjusted chip</b>: when brightness / contrast / levels or filters are on, the status bar shows “🎨 Image adjusted”; tap the text to open the adjust panel, tap ↺ to show the original image (the original file is never changed). The panel is under “Adjust &amp; guides” → “Adjust”.</li><li><b>Temporary file notice</b>: HTML opened straight from a chat app is temporary and will be cleaned up — use the web version or save the file first.</li><li>Charts show non-significant comparisons (ns) by default.</li></ul>"
+ }
+};
+  for (const [lang, d] of Object.entries(add)) {
+    const L = I18N[lang];
+    for (const [k, v] of Object.entries(d)) { if (k[0] === '+') L[k.slice(1)] = (L[k.slice(1)] || []).concat(v); else if (k[0] !== '_') L[k] = v; }
+    L.helpHtml += d._help;
+  }
+})();
+
+// ===== i18n-v1415.js =====
+// ---------------------------------------------------------------------------
+// i18n-v1415.js — v1.4.15：AI 计数「目标」按对象选算法（蚊卵 / 卵囊模型、菌落 / 噬斑阈值法），阈值计数标签页并入；「图像调整」窗口
+// （由脚本生成；繁體中文由简体经 OpenCC s2twp 转换）
+// ---------------------------------------------------------------------------
+(function () {
+  const add = {
+ "zh": {
+  "c25_grpModels": "按对象（推荐）",
+  "c25_grpSimple": "简单斑点检测（自定义）",
+  "c25_tEgg": "🦟 按蚊卵 — AI 模型",
+  "c25_tOocyst": "🔴 卵囊 — AI 模型",
+  "c25_tColony": "🧫 细菌菌落 — 阈值法（AI 模型即将推出）",
+  "c25_tPlaque": "⚪ 噬斑 — 阈值法",
+  "c25_adjTitle": "图像调整",
+  "c25_adjShort": "调整",
+  "c25_adjTip": "图像调整：曝光、对比度、阴影、高光、中间调（只改显示，原图不变）",
+  "c25_exposure": "曝光",
+  "c25_contrast": "对比度",
+  "c25_shadows": "阴影",
+  "c25_highlights": "高光",
+  "c25_midtones": "中间调",
+  "c25_invert": "反相",
+  "c25_auto": "自动",
+  "c25_reset": "恢复原图",
+  "c25_sync": "应用到本文件夹",
+  "c25_more": "滤波 / 背景扣除…",
+  "c25_note": "只改屏幕显示和自动计数用的图，原图文件不变；Ctrl+Z 可撤回。",
+  "c13_h_adjust": [
+   "拖动滑块调整显示：曝光（整体亮暗）、对比度、阴影（黑点）、高光（白点）、中间调。",
+   "「自动」按直方图拉伸；「恢复原图」清除所有调整与滤波；「应用到本文件夹」把同样的设置用到同一文件夹的其它图。",
+   "窗口可拖动、可折叠（▾）；工具栏「🎨 调整」或状态栏「🎨 图像已调整」打开。"
+  ],
+  "wn_ai": "<p>打开 <b>AI</b> 面板 →「目标」里直接选：<b>🦟 按蚊卵</b>、<b>🔴 卵囊</b>（AI 模型），<b>🧫 细菌菌落</b>、<b>⚪ 噬斑</b>（阈值法，菌落 AI 模型即将推出），再点「AI 计数」。</p><p>结果放进当前类别；每张图大约 10–20 秒，在后台算，不卡。</p>",
+  "wn_adjust_t": "图像调整窗口",
+  "wn_adjust": "<p>工具栏 <b>🎨 调整</b> 打开左下角的小窗口：<b>曝光、对比度、阴影、高光、中间调</b>，拖动即时生效；可折叠、可拖动。</p><p>只改显示，原图不变；「恢复原图」一键回去。</p>",
+  "c13_h_ai": [
+   "「计数对象」先选要数的东西：🦟 按蚊卵 / 🔴 卵囊（训练好的 AI 模型）、🧫 细菌菌落 / ⚪ 噬斑（阈值 + 分水岭），再点「AI 计数」。",
+   "结果放进当前类别；AI 拿不准的放进「待核」，不计入总数；Ctrl+Z 整批撤回。",
+   "「简单斑点检测」：自定义大小、深浅的通用方法，可「核查」漏标 / 多标。「学习计数」页：数完点 ✓ 让软件在本机学习。"
+  ],
+  "_help": "<h3>v1.4.15</h3><ul><li><b>AI 计数按对象选算法</b>：「目标」里选 🦟 按蚊卵 / 🔴 卵囊（AI 模型）或 🧫 细菌菌落 / ⚪ 噬斑（阈值 + 分水岭，菌落 AI 模型即将推出）。原来的「阈值计数」标签页已并入这里。</li><li><b>图像调整窗口</b>：工具栏「🎨 调整」打开左下角窗口，曝光、对比度、阴影、高光、中间调，可折叠、可拖动；只改显示，原图不变。</li></ul>"
+ },
+ "zh-Hant": {
+  "c25_grpModels": "按物件（推薦）",
+  "c25_grpSimple": "簡單斑點檢測（自定義）",
+  "c25_tEgg": "🦟 按蚊卵 — AI 模型",
+  "c25_tOocyst": "🔴 卵囊 — AI 模型",
+  "c25_tColony": "🧫 細菌菌落 — 閾值法（AI 模型即將推出）",
+  "c25_tPlaque": "⚪ 噬斑 — 閾值法",
+  "c25_adjTitle": "影象調整",
+  "c25_adjShort": "調整",
+  "c25_adjTip": "影象調整：曝光、對比度、陰影、高光、中間調（只改顯示，原圖不變）",
+  "c25_exposure": "曝光",
+  "c25_contrast": "對比度",
+  "c25_shadows": "陰影",
+  "c25_highlights": "高光",
+  "c25_midtones": "中間調",
+  "c25_invert": "反相",
+  "c25_auto": "自動",
+  "c25_reset": "恢復原圖",
+  "c25_sync": "應用到本資料夾",
+  "c25_more": "濾波 / 背景扣除…",
+  "c25_note": "只改螢幕顯示和自動計數用的圖，原圖檔案不變；Ctrl+Z 可撤回。",
+  "c13_h_adjust": [
+   "拖動滑塊調整顯示：曝光（整體亮暗）、對比度、陰影（黑點）、高光（白點）、中間調。",
+   "「自動」按直方圖拉伸；「恢復原圖」清除所有調整與濾波；「應用到本資料夾」把同樣的設定用到同一資料夾的其它圖。",
+   "視窗可拖動、可摺疊（▾）；工具欄「🎨 調整」或狀態列「🎨 影象已調整」開啟。"
+  ],
+  "wn_ai": "<p>開啟 <b>AI</b> 面板 →「目標」裡直接選：<b>🦟 按蚊卵</b>、<b>🔴 卵囊</b>（AI 模型），<b>🧫 細菌菌落</b>、<b>⚪ 噬斑</b>（閾值法，菌落 AI 模型即將推出），再點「AI 計數」。</p><p>結果放進當前類別；每張圖大約 10–20 秒，在後臺算，不卡。</p>",
+  "wn_adjust_t": "影象調整視窗",
+  "wn_adjust": "<p>工具欄 <b>🎨 調整</b> 開啟左下角的小視窗：<b>曝光、對比度、陰影、高光、中間調</b>，拖動即時生效；可摺疊、可拖動。</p><p>只改顯示，原圖不變；「恢復原圖」一鍵回去。</p>",
+  "c13_h_ai": [
+   "「計數物件」先選要數的東西：🦟 按蚊卵 / 🔴 卵囊（訓練好的 AI 模型）、🧫 細菌菌落 / ⚪ 噬斑（閾值 + 分水嶺），再點「AI 計數」。",
+   "結果放進當前類別；AI 拿不準的放進「待核」，不計入總數；Ctrl+Z 整批撤回。",
+   "「簡單斑點檢測」：自定義大小、深淺的通用方法，可「核查」漏標 / 多標。「學習計數」頁：數完點 ✓ 讓軟體在本機學習。"
+  ],
+  "_help": "<h3>v1.4.15</h3><ul><li><b>AI 計數按物件選演算法</b>：「目標」裡選 🦟 按蚊卵 / 🔴 卵囊（AI 模型）或 🧫 細菌菌落 / ⚪ 噬斑（閾值 + 分水嶺，菌落 AI 模型即將推出）。原來的「閾值計數」標籤頁已併入這裡。</li><li><b>影象調整視窗</b>：工具欄「🎨 調整」開啟左下角視窗，曝光、對比度、陰影、高光、中間調，可摺疊、可拖動；只改顯示，原圖不變。</li></ul>"
+ },
+ "en": {
+  "c25_grpModels": "By object (recommended)",
+  "c25_grpSimple": "Simple spot detection (custom)",
+  "c25_tEgg": "🦟 Anopheles eggs — AI model",
+  "c25_tOocyst": "🔴 Oocysts — AI model",
+  "c25_tColony": "🧫 Bacterial colonies — threshold method (AI model coming soon)",
+  "c25_tPlaque": "⚪ Plaques — threshold method",
+  "c25_adjTitle": "Image adjust",
+  "c25_adjShort": "Adjust",
+  "c25_adjTip": "Image adjust: exposure, contrast, shadows, highlights, midtones (display only; the original is unchanged)",
+  "c25_exposure": "Exposure",
+  "c25_contrast": "Contrast",
+  "c25_shadows": "Shadows",
+  "c25_highlights": "Highlights",
+  "c25_midtones": "Midtones",
+  "c25_invert": "Invert",
+  "c25_auto": "Auto",
+  "c25_reset": "Original",
+  "c25_sync": "Apply to folder",
+  "c25_more": "Filters / background…",
+  "c25_note": "Changes the display and the image used for auto counting only; the original file is never changed. Ctrl+Z undoes.",
+  "c13_h_adjust": [
+   "Drag the sliders: exposure (overall brightness), contrast, shadows (black point), highlights (white point), midtones.",
+   "“Auto” stretches the histogram; “Original” clears all adjustments and filters; “Apply to folder” copies the settings to the other images in the folder.",
+   "Drag or collapse (▾) the window; open it with “🎨 Adjust” in the toolbar or “🎨 Image adjusted” in the status bar."
+  ],
+  "wn_ai": "<p>Open the <b>AI</b> panel and pick the <b>Target</b>: <b>🦟 Anopheles eggs</b>, <b>🔴 Oocysts</b> (AI models), <b>🧫 Bacterial colonies</b>, <b>⚪ Plaques</b> (threshold method; colony AI model coming soon). Then click “AI count”.</p><p>Points go to the current category; about 10–20 seconds per image, in the background.</p>",
+  "wn_adjust_t": "Image adjust window",
+  "wn_adjust": "<p><b>🎨 Adjust</b> in the toolbar opens a small window at the bottom left: <b>exposure, contrast, shadows, highlights, midtones</b>, live as you drag; collapse or move it.</p><p>Display only — the original is unchanged; “Original” goes back in one click.</p>",
+  "c13_h_ai": [
+   "Pick what to count: 🦟 Anopheles eggs / 🔴 Oocysts (trained AI models) or 🧫 Bacterial colonies / ⚪ Plaques (threshold + watershed), then click “AI count”.",
+   "Points go to the current category; unsure ones go to “To review” and are not counted; Ctrl+Z undoes the whole batch.",
+   "“Simple spot detection”: a general method with your own size / darkness settings, with “Check” for missed / extra marks. “Learn” tab: tick ✓ when done and the app learns on your computer."
+  ],
+  "_help": "<h3>v1.4.15</h3><ul><li><b>AI count by object</b>: choose 🦟 Anopheles eggs / 🔴 Oocysts (AI models) or 🧫 Bacterial colonies / ⚪ Plaques (threshold + watershed; colony AI model coming soon) as the Target. The old “Threshold count” tab is merged here.</li><li><b>Image adjust window</b>: “🎨 Adjust” in the toolbar opens a window at the bottom left — exposure, contrast, shadows, highlights, midtones; collapsible and movable; display only.</li></ul>"
+ },
+ "es": {
+  "c25_grpModels": "Por objeto (recomendado)",
+  "c25_grpSimple": "Detección simple de puntos (personalizada)",
+  "c25_tEgg": "🦟 Huevos de Anopheles — modelo IA",
+  "c25_tOocyst": "🔴 Ooquistes — modelo IA",
+  "c25_tColony": "🧫 Colonias bacterianas — umbral (modelo IA próximamente)",
+  "c25_tPlaque": "⚪ Placas — método de umbral",
+  "c25_adjTitle": "Ajuste de imagen",
+  "c25_adjShort": "Ajustar",
+  "c25_adjTip": "Ajuste: exposición, contraste, sombras, luces, tonos medios (solo visualización)",
+  "c25_exposure": "Exposición",
+  "c25_contrast": "Contraste",
+  "c25_shadows": "Sombras",
+  "c25_highlights": "Luces",
+  "c25_midtones": "Tonos medios",
+  "c25_invert": "Invertir",
+  "c25_auto": "Auto",
+  "c25_reset": "Original",
+  "c25_sync": "Aplicar a la carpeta",
+  "c25_more": "Filtros / fondo…",
+  "c25_note": "Solo cambia la visualización y la imagen del conteo automático; el archivo original no cambia. Ctrl+Z deshace.",
+  "c13_h_adjust": [
+   "Drag the sliders: exposure (overall brightness), contrast, shadows (black point), highlights (white point), midtones.",
+   "“Auto” stretches the histogram; “Original” clears all adjustments and filters; “Apply to folder” copies the settings to the other images in the folder.",
+   "Drag or collapse (▾) the window; open it with “🎨 Adjust” in the toolbar or “🎨 Image adjusted” in the status bar."
+  ],
+  "wn_ai": "<p>Open the <b>AI</b> panel and pick the <b>Target</b>: <b>🦟 Anopheles eggs</b>, <b>🔴 Oocysts</b> (AI models), <b>🧫 Bacterial colonies</b>, <b>⚪ Plaques</b> (threshold method; colony AI model coming soon). Then click “AI count”.</p><p>Points go to the current category; about 10–20 seconds per image, in the background.</p>",
+  "wn_adjust_t": "Ventana de ajuste",
+  "wn_adjust": "<p><b>🎨 Adjust</b> in the toolbar opens a small window at the bottom left: <b>exposure, contrast, shadows, highlights, midtones</b>, live as you drag; collapse or move it.</p><p>Display only — the original is unchanged; “Original” goes back in one click.</p>",
+  "c13_h_ai": [
+   "Pick what to count: 🦟 Anopheles eggs / 🔴 Oocysts (trained AI models) or 🧫 Bacterial colonies / ⚪ Plaques (threshold + watershed), then click “AI count”.",
+   "Points go to the current category; unsure ones go to “To review” and are not counted; Ctrl+Z undoes the whole batch.",
+   "“Simple spot detection”: a general method with your own size / darkness settings, with “Check” for missed / extra marks. “Learn” tab: tick ✓ when done and the app learns on your computer."
+  ],
+  "_help": "<h3>v1.4.15</h3><ul><li><b>AI count by object</b>: choose 🦟 Anopheles eggs / 🔴 Oocysts (AI models) or 🧫 Bacterial colonies / ⚪ Plaques (threshold + watershed; colony AI model coming soon) as the Target. The old “Threshold count” tab is merged here.</li><li><b>Image adjust window</b>: “🎨 Adjust” in the toolbar opens a window at the bottom left — exposure, contrast, shadows, highlights, midtones; collapsible and movable; display only.</li></ul>"
+ },
+ "pt": {
+  "c25_grpModels": "Por objeto (recomendado)",
+  "c25_grpSimple": "Detecção simples de pontos (personalizada)",
+  "c25_tEgg": "🦟 Ovos de Anopheles — modelo de IA",
+  "c25_tOocyst": "🔴 Oocistos — modelo de IA",
+  "c25_tColony": "🧫 Colônias bacterianas — limiar (modelo de IA em breve)",
+  "c25_tPlaque": "⚪ Placas — método de limiar",
+  "c25_adjTitle": "Ajuste de imagem",
+  "c25_adjShort": "Ajustar",
+  "c25_adjTip": "Ajuste: exposição, contraste, sombras, realces, tons médios (só exibição)",
+  "c25_exposure": "Exposição",
+  "c25_contrast": "Contraste",
+  "c25_shadows": "Sombras",
+  "c25_highlights": "Realces",
+  "c25_midtones": "Tons médios",
+  "c25_invert": "Inverter",
+  "c25_auto": "Auto",
+  "c25_reset": "Original",
+  "c25_sync": "Aplicar à pasta",
+  "c25_more": "Filtros / fundo…",
+  "c25_note": "Só muda a exibição e a imagem da contagem automática; o arquivo original não muda. Ctrl+Z desfaz.",
+  "c13_h_adjust": [
+   "Drag the sliders: exposure (overall brightness), contrast, shadows (black point), highlights (white point), midtones.",
+   "“Auto” stretches the histogram; “Original” clears all adjustments and filters; “Apply to folder” copies the settings to the other images in the folder.",
+   "Drag or collapse (▾) the window; open it with “🎨 Adjust” in the toolbar or “🎨 Image adjusted” in the status bar."
+  ],
+  "wn_ai": "<p>Open the <b>AI</b> panel and pick the <b>Target</b>: <b>🦟 Anopheles eggs</b>, <b>🔴 Oocysts</b> (AI models), <b>🧫 Bacterial colonies</b>, <b>⚪ Plaques</b> (threshold method; colony AI model coming soon). Then click “AI count”.</p><p>Points go to the current category; about 10–20 seconds per image, in the background.</p>",
+  "wn_adjust_t": "Janela de ajuste",
+  "wn_adjust": "<p><b>🎨 Adjust</b> in the toolbar opens a small window at the bottom left: <b>exposure, contrast, shadows, highlights, midtones</b>, live as you drag; collapse or move it.</p><p>Display only — the original is unchanged; “Original” goes back in one click.</p>",
+  "c13_h_ai": [
+   "Pick what to count: 🦟 Anopheles eggs / 🔴 Oocysts (trained AI models) or 🧫 Bacterial colonies / ⚪ Plaques (threshold + watershed), then click “AI count”.",
+   "Points go to the current category; unsure ones go to “To review” and are not counted; Ctrl+Z undoes the whole batch.",
+   "“Simple spot detection”: a general method with your own size / darkness settings, with “Check” for missed / extra marks. “Learn” tab: tick ✓ when done and the app learns on your computer."
+  ],
+  "_help": "<h3>v1.4.15</h3><ul><li><b>AI count by object</b>: choose 🦟 Anopheles eggs / 🔴 Oocysts (AI models) or 🧫 Bacterial colonies / ⚪ Plaques (threshold + watershed; colony AI model coming soon) as the Target. The old “Threshold count” tab is merged here.</li><li><b>Image adjust window</b>: “🎨 Adjust” in the toolbar opens a window at the bottom left — exposure, contrast, shadows, highlights, midtones; collapsible and movable; display only.</li></ul>"
+ },
+ "ja": {
+  "c25_grpModels": "対象別（おすすめ）",
+  "c25_grpSimple": "簡易スポット検出（カスタム）",
+  "c25_tEgg": "🦟 ハマダラカの卵 — AI モデル",
+  "c25_tOocyst": "🔴 オーシスト — AI モデル",
+  "c25_tColony": "🧫 細菌コロニー — しきい値法（AI モデル準備中）",
+  "c25_tPlaque": "⚪ プラーク — しきい値法",
+  "c25_adjTitle": "画像調整",
+  "c25_adjShort": "調整",
+  "c25_adjTip": "画像調整：露出・コントラスト・シャドウ・ハイライト・中間調（表示のみ、元画像は不変）",
+  "c25_exposure": "露出",
+  "c25_contrast": "コントラスト",
+  "c25_shadows": "シャドウ",
+  "c25_highlights": "ハイライト",
+  "c25_midtones": "中間調",
+  "c25_invert": "反転",
+  "c25_auto": "自動",
+  "c25_reset": "元に戻す",
+  "c25_sync": "フォルダに適用",
+  "c25_more": "フィルタ / 背景除去…",
+  "c25_note": "表示と自動カウント用の画像だけが変わり、元ファイルは変わりません。Ctrl+Z で取り消し。",
+  "c13_h_adjust": [
+   "Drag the sliders: exposure (overall brightness), contrast, shadows (black point), highlights (white point), midtones.",
+   "“Auto” stretches the histogram; “Original” clears all adjustments and filters; “Apply to folder” copies the settings to the other images in the folder.",
+   "Drag or collapse (▾) the window; open it with “🎨 Adjust” in the toolbar or “🎨 Image adjusted” in the status bar."
+  ],
+  "wn_ai": "<p>Open the <b>AI</b> panel and pick the <b>Target</b>: <b>🦟 Anopheles eggs</b>, <b>🔴 Oocysts</b> (AI models), <b>🧫 Bacterial colonies</b>, <b>⚪ Plaques</b> (threshold method; colony AI model coming soon). Then click “AI count”.</p><p>Points go to the current category; about 10–20 seconds per image, in the background.</p>",
+  "wn_adjust_t": "画像調整ウィンドウ",
+  "wn_adjust": "<p><b>🎨 Adjust</b> in the toolbar opens a small window at the bottom left: <b>exposure, contrast, shadows, highlights, midtones</b>, live as you drag; collapse or move it.</p><p>Display only — the original is unchanged; “Original” goes back in one click.</p>",
+  "c13_h_ai": [
+   "Pick what to count: 🦟 Anopheles eggs / 🔴 Oocysts (trained AI models) or 🧫 Bacterial colonies / ⚪ Plaques (threshold + watershed), then click “AI count”.",
+   "Points go to the current category; unsure ones go to “To review” and are not counted; Ctrl+Z undoes the whole batch.",
+   "“Simple spot detection”: a general method with your own size / darkness settings, with “Check” for missed / extra marks. “Learn” tab: tick ✓ when done and the app learns on your computer."
+  ],
+  "_help": "<h3>v1.4.15</h3><ul><li><b>AI count by object</b>: choose 🦟 Anopheles eggs / 🔴 Oocysts (AI models) or 🧫 Bacterial colonies / ⚪ Plaques (threshold + watershed; colony AI model coming soon) as the Target. The old “Threshold count” tab is merged here.</li><li><b>Image adjust window</b>: “🎨 Adjust” in the toolbar opens a window at the bottom left — exposure, contrast, shadows, highlights, midtones; collapsible and movable; display only.</li></ul>"
+ },
+ "ko": {
+  "c25_grpModels": "대상별(권장)",
+  "c25_grpSimple": "간단한 점 검출(사용자 지정)",
+  "c25_tEgg": "🦟 학질모기 알 — AI 모델",
+  "c25_tOocyst": "🔴 난포낭 — AI 모델",
+  "c25_tColony": "🧫 세균 집락 — 임계값 방법(AI 모델 준비 중)",
+  "c25_tPlaque": "⚪ 플라크 — 임계값 방법",
+  "c25_adjTitle": "이미지 조정",
+  "c25_adjShort": "조정",
+  "c25_adjTip": "이미지 조정: 노출, 대비, 그림자, 하이라이트, 중간톤(표시만, 원본 불변)",
+  "c25_exposure": "노출",
+  "c25_contrast": "대비",
+  "c25_shadows": "그림자",
+  "c25_highlights": "하이라이트",
+  "c25_midtones": "중간톤",
+  "c25_invert": "반전",
+  "c25_auto": "자동",
+  "c25_reset": "원본",
+  "c25_sync": "폴더에 적용",
+  "c25_more": "필터 / 배경 제거…",
+  "c25_note": "표시와 자동 계수용 이미지만 바뀌고 원본 파일은 그대로입니다. Ctrl+Z로 취소.",
+  "c13_h_adjust": [
+   "Drag the sliders: exposure (overall brightness), contrast, shadows (black point), highlights (white point), midtones.",
+   "“Auto” stretches the histogram; “Original” clears all adjustments and filters; “Apply to folder” copies the settings to the other images in the folder.",
+   "Drag or collapse (▾) the window; open it with “🎨 Adjust” in the toolbar or “🎨 Image adjusted” in the status bar."
+  ],
+  "wn_ai": "<p>Open the <b>AI</b> panel and pick the <b>Target</b>: <b>🦟 Anopheles eggs</b>, <b>🔴 Oocysts</b> (AI models), <b>🧫 Bacterial colonies</b>, <b>⚪ Plaques</b> (threshold method; colony AI model coming soon). Then click “AI count”.</p><p>Points go to the current category; about 10–20 seconds per image, in the background.</p>",
+  "wn_adjust_t": "이미지 조정 창",
+  "wn_adjust": "<p><b>🎨 Adjust</b> in the toolbar opens a small window at the bottom left: <b>exposure, contrast, shadows, highlights, midtones</b>, live as you drag; collapse or move it.</p><p>Display only — the original is unchanged; “Original” goes back in one click.</p>",
+  "c13_h_ai": [
+   "Pick what to count: 🦟 Anopheles eggs / 🔴 Oocysts (trained AI models) or 🧫 Bacterial colonies / ⚪ Plaques (threshold + watershed), then click “AI count”.",
+   "Points go to the current category; unsure ones go to “To review” and are not counted; Ctrl+Z undoes the whole batch.",
+   "“Simple spot detection”: a general method with your own size / darkness settings, with “Check” for missed / extra marks. “Learn” tab: tick ✓ when done and the app learns on your computer."
+  ],
+  "_help": "<h3>v1.4.15</h3><ul><li><b>AI count by object</b>: choose 🦟 Anopheles eggs / 🔴 Oocysts (AI models) or 🧫 Bacterial colonies / ⚪ Plaques (threshold + watershed; colony AI model coming soon) as the Target. The old “Threshold count” tab is merged here.</li><li><b>Image adjust window</b>: “🎨 Adjust” in the toolbar opens a window at the bottom left — exposure, contrast, shadows, highlights, midtones; collapsible and movable; display only.</li></ul>"
  }
 };
   for (const [lang, d] of Object.entries(add)) {
@@ -16154,11 +16479,12 @@ const TOUR_STEPS = [
 ];
 
 // v1.4.14：版本更新后第一次打开时，用同样的箭头引导展示新功能（「新功能导览」）；新用户先看普通教程
-const WHATSNEW_VER = '1.4.14';
+const WHATSNEW_VER = '1.4.15';
 const WHATSNEW_STEPS = [
   { key: 'hello', emoji: '🎉' },
   { key: 'ai', emoji: '🦟', target: ['[data-cmd="toggleAi"]'] },
   { key: 'review', emoji: '🟧', target: ['#catSection', '#mobCatBtn', '#btnSidePanel'] },
+  { key: 'adjust', emoji: '🎨', target: ['[data-cmd="toggleAdj"]'] },
   { key: 'proj', emoji: '🗂', target: ['#btnProj'] },
   { key: 'stats', emoji: '📊', target: ['#btnStats'] },
   { key: 'keep', emoji: '💾', target: ['[data-cmd="help"]'] }
@@ -18423,7 +18749,7 @@ function initStackBar() {
 // 命令是纯数据（可序列化为 JSON），随项目文件一起保存，重新打开项目后仍可撤回。
 // 坐标单位：图片原始像素。尺寸单位："u" = max(图宽, 图高)/1000 像素。
 // ---------------------------------------------------------------------------
-const APP_VERSION = '1.4.14';
+const APP_VERSION = '1.4.15';
 const FORMAT_ID = 'counting-tool-project';          // v1.0：单张图片的 .mark.json
 const WS_FORMAT_ID = 'counting-tool-workspace';     // v1.1 起：多图项目 .mark.zip
 const WS_FORMAT_VERSION = 5;   // v1.3：图形对象 shape、标记单独大小 mw/mh、图层顺序、锁定
@@ -22324,7 +22650,7 @@ function initToolsPanel() {
   $('#adInvert').addEventListener('click', () => { if (state.doc) setAdjust(Object.assign(cur(), { invert: !cur().invert })); });
   $('#adReset').addEventListener('click', () => { if (state.doc) setAdjust(Object.assign({}, ADJ0)); });
   // v1.4.14：状态栏「🎨 已调整」：点文字打开调整面板，↺ 恢复原图（调整与处理一起清除，一步撤回）
-  $('#stAdjOpen').addEventListener('click', () => { if (!state.doc) return; prefs.set('toolsTab', procActive(state.doc) && !adjActive(state.doc) ? 'proc' : 'adjust'); setPanelOpen('tools', true); updateToolsPanel(); });
+  $('#stAdjOpen').addEventListener('click', () => { if (!state.doc) return; if (procActive(state.doc) && !adjActive(state.doc)) { prefs.set('toolsTab', 'proc'); setPanelOpen('tools', true); updateToolsPanel(); } else setPanelOpen('adjust', true); });
   $('#stAdjReset').addEventListener('click', restoreOriginalView);
   const cmp = $('#adCompare');
   const setBypass = (on) => { adjBypass = on; cmp.classList.toggle('active', on); view.baseKey = ''; requestRender(); };
@@ -22522,6 +22848,78 @@ function updateToolsPanel() {
   } else {
     updateScaleControls();
   }
+}
+
+// ===== adjpanel.js =====
+// ---------------------------------------------------------------------------
+// adjpanel.js — v1.4.15：「图像调整」浮动窗口（左下角，可折叠 / 拖动）
+// 用户反馈找不到对比度、曝光等调整：工具栏「🎨 调整」与状态栏「🎨 图像已调整」都打开这里。
+// 滑块直接改 doc.adjust（与「调整与辅助」→「调整」同一套参数，只影响显示与自动计数，原图不变）：
+//   曝光 = brightness，对比度 = contrast，阴影 = 黑点 black，高光 = 白点 white，中间调 = γ；拖动中实时预览，松手记一步撤回。
+// ---------------------------------------------------------------------------
+const ADJ_SLIDERS = [
+  { k: 'brightness', label: 'c25_exposure', min: -100, max: 100, step: 1 },
+  { k: 'contrast', label: 'c25_contrast', min: -100, max: 100, step: 1 },
+  { k: 'black', label: 'c25_shadows', min: 0, max: 200, step: 1 },
+  { k: 'white', label: 'c25_highlights', min: 55, max: 255, step: 1 },
+  { k: 'gamma', label: 'c25_midtones', min: -100, max: 100, step: 1 }   // 滑块值 v → γ = 2^(v/50)（0.25–4）
+];
+const gammaToSlider = (g) => Math.round(50 * Math.log2(g || 1));
+const sliderToGamma = (v) => +Math.pow(2, v / 50).toFixed(3);
+
+function adjPanelHtml() {
+  return ADJ_SLIDERS.map(s => `<label class="adj-row"><span>${escapeHtml(t(s.label))}</span>
+      <input type="range" data-adj="${s.k}" min="${s.min}" max="${s.max}" step="${s.step}"><b data-adj-val="${s.k}"></b></label>`).join('') +
+    `<label class="check small adj-row2"><input type="checkbox" data-adj="invert"> <span>${escapeHtml(t('c25_invert'))}</span></label>
+    <div class="adj-btns">
+      <button type="button" class="small" data-adj-act="auto">✨ ${escapeHtml(t('c25_auto'))}</button>
+      <button type="button" class="small" data-adj-act="reset">↺ ${escapeHtml(t('c25_reset'))}</button>
+      <button type="button" class="small" data-adj-act="sync">${escapeHtml(t('c25_sync'))}</button>
+      <button type="button" class="small" data-adj-act="more">${escapeHtml(t('c25_more'))}</button>
+    </div>
+    <div class="small muted">${escapeHtml(t('c25_note'))}</div>`;
+}
+function updateAdjPanel() {
+  const body = $('#adjBody');
+  if (!body || $('#adjPanel').hidden) return;
+  if (body.dataset.lang !== LANG) { body.innerHTML = adjPanelHtml(); body.dataset.lang = LANG; }
+  const a = adjOf(state.doc), dis = !state.doc || isTallyDoc(state.doc);
+  for (const s of ADJ_SLIDERS) {
+    const el = $(`[data-adj="${s.k}"]`, body), v = s.k === 'gamma' ? gammaToSlider(a.gamma) : a[s.k] || 0;
+    if (document.activeElement !== el) el.value = v;
+    el.disabled = dis;
+    $(`[data-adj-val="${s.k}"]`, body).textContent = s.k === 'gamma' ? a.gamma.toFixed(2) : v;
+  }
+  $('[data-adj="invert"]', body).checked = !!a.invert;
+  $$('[data-adj-act]', body).forEach(b => { b.disabled = dis; });
+}
+function adjFromInput(el) {
+  const a = adjOf(state.doc), k = el.dataset.adj;
+  if (k === 'invert') a.invert = el.checked;
+  else if (k === 'gamma') a.gamma = sliderToGamma(+el.value);
+  else a[k] = +el.value;
+  if (k === 'black' && a.black >= a.white - 1) a.black = a.white - 2;
+  if (k === 'white' && a.white <= a.black + 1) a.white = a.black + 2;
+  return a;
+}
+function initAdjPanel() {
+  const panel = $('#adjPanel');
+  if (!panel) return;
+  makeFloating(panel, 'adjust', 'bl', { a: 12, b: 12 }, false);
+  const body = $('#adjBody');
+  body.addEventListener('input', (e) => { const el = e.target.closest('[data-adj]'); if (el && state.doc && el.type === 'range') { setAdjust(adjFromInput(el), true); updateAdjPanel(); } });
+  body.addEventListener('change', (e) => { const el = e.target.closest('[data-adj]'); if (el && state.doc) { setAdjust(adjFromInput(el)); updateAdjPanel(); } });
+  body.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-adj-act]');
+    if (!b || !state.doc) return;
+    const act = b.dataset.adjAct;
+    if (act === 'auto') autoContrast();
+    else if (act === 'reset') restoreOriginalView();
+    else if (act === 'sync') toast(t('syncedN', { n: syncDocPropToFolder('adjust') }));
+    else if (act === 'more') { prefs.set('toolsTab', 'proc'); setPanelOpen('tools', true); updateToolsPanel(); }
+    updateAdjPanel();
+  });
+  body.addEventListener('keydown', (e) => e.stopPropagation());
 }
 
 // ===== platediv.js =====
@@ -24356,7 +24754,7 @@ function initAiAutoCountSwitch() {
   const sw = document.createElement('div');
   sw.id = 'aiModeSwitch';
   sw.className = 'tabs ai-mode';
-  sw.innerHTML = `<button type="button" data-aimode="ai">${escapeHtml(t('c9_modeAi'))}</button><button type="button" data-aimode="threshold">${escapeHtml(t('c9_modeTh'))}</button><button type="button" data-aimode="learn">${escapeHtml(t('c16_modeLearn'))}</button>`;
+  sw.innerHTML = `<button type="button" data-aimode="ai">${escapeHtml(t('c9_modeAi'))}</button><button type="button" data-aimode="learn">${escapeHtml(t('c16_modeLearn'))}</button>`;
   body.prepend(sw);
   const host = document.createElement('div');
   host.id = 'acHostAi';
@@ -24371,11 +24769,21 @@ function initAiAutoCountSwitch() {
 function syncAiMode() {
   const body = $('#aiPanel .ai-body');
   if (!body) return;
-  const mode = prefs.get('aiMode', 'ai');
-  $$('#aiModeSwitch [data-aimode]').forEach(b => { b.classList.toggle('active', b.dataset.aimode === mode); b.textContent = t(b.dataset.aimode === 'ai' ? 'c9_modeAi' : b.dataset.aimode === 'learn' ? 'c16_modeLearn' : 'c9_modeTh'); });
-  Array.from(body.children).forEach(ch => { if (ch.id !== 'aiModeSwitch' && ch.id !== 'acHostAi' && ch.id !== 'lcHost') ch.classList.toggle('ac-hidden', mode !== 'ai'); });
+  // v1.4.15：「阈值计数」标签页并入 AI 计数的「目标」（菌落 / 噬斑）；旧偏好 threshold → AI 计数 + 菌落
+  let mode = prefs.get('aiMode', 'ai');
+  if (mode === 'threshold') { mode = 'ai'; prefs.set('aiMode', 'ai'); if (!prefs.get('ai.target', null)) prefs.set('ai.target', 't:colony'); }
+  if (typeof fillProfileSelect === 'function' && $('#aiProfile')) fillProfileSelect();
+  const tg = mode === 'ai' && typeof aiTarget === 'function' ? aiTarget() : null;
+  $$('#aiModeSwitch [data-aimode]').forEach(b => { b.classList.toggle('active', b.dataset.aimode === mode); b.textContent = t(b.dataset.aimode === 'ai' ? 'c9_modeAi' : 'c16_modeLearn'); });
+  const keep = (ch) => ch.id === 'aiStatus' || ch.contains($('#aiProfile')) || (tg && tg.startsWith('m:') && ch.classList.contains('ai-actions'));
+  Array.from(body.children).forEach(ch => {
+    if (ch.id === 'aiModeSwitch' || ch.id === 'acHostAi' || ch.id === 'lcHost') return;
+    ch.classList.toggle('ac-hidden', mode !== 'ai' || (!!tg && !keep(ch)));
+  });
+  ['#aiProfNew', '#aiProfDel'].forEach(sel => { const el = $(sel); if (el) el.hidden = !!tg; });
+  const vb = $('#aiVerify'); if (vb) vb.hidden = !!tg;
   const host = $('#acHostAi');
-  host.hidden = mode !== 'threshold';
+  host.hidden = !(tg && tg.startsWith('t:'));
   const lhost = $('#lcHost');
   if (lhost) {
     lhost.hidden = mode !== 'learn';
@@ -24384,7 +24792,7 @@ function syncAiMode() {
     else if (mode === 'learn') refreshLearnUI();
   }
   if (typeof refreshOpHelp === 'function') refreshOpHelp('aiPanel');
-  if (mode === 'threshold') { updateAutoCountUI(); scheduleAutoCount(); }
+  if (tg && tg.startsWith('t:')) { updateAutoCountUI(); scheduleAutoCount(); }
   requestRender();
 }
 // 切换图片 / 文档变化时
@@ -30745,9 +31153,10 @@ function initLivePanel() {
 const HELP_SPOTS = [
   // id：容器；head：放 ? 的位置；after：说明插在它后面；key：当前说明
   { id: 'folderPanel', key: () => 'folders' },
-  { id: 'aiPanel', key: () => ({ threshold: 'tools_auto', learn: 'learn' }[prefs.get('aiMode', 'ai')] || 'ai') },
+  { id: 'aiPanel', key: () => (prefs.get('aiMode', 'ai') === 'learn' ? 'learn' : String(prefs.get('ai.target', '') || '').startsWith('t:') ? 'tools_auto' : 'ai') },
   { id: 'toolsPanel', key: () => 'tools_' + (PANEL_TABS.includes(prefs.get('toolsTab', 'adjust')) ? prefs.get('toolsTab', 'adjust') : 'adjust') },
   { id: 'livePanel', key: () => 'live' },
+  { id: 'adjPanel', key: () => 'adjust' },
   { id: 'quickPanel', key: () => 'quick' },
   { id: 'catSection', head: '.panel-head', after: '.panel-head', key: () => 'cats' },
   { id: 'summaryDialog', after: '.stats-head', key: () => 'stats_' + statsTab },
@@ -33500,6 +33909,28 @@ function reviewCatCmd(doc, cmds) {
   cmds.push({ k: 'catAdd', cat: c, index: doc.categories.length });
   return c.id;
 }
+// v1.4.14：AI 面板顶部的一键按钮：用指定的内置模型数当前类别（记住这个类别用哪个模型，不用改类别名）
+function renderAiQuick() {
+  const box = $('#aiQuick');
+  if (!box) return;
+  const icon = { blob: '🦟', spot: '🔴' };
+  const cat = state.doc && findCat(state.currentCat);
+  box.innerHTML = BUILTIN_MODELS.filter(netModel).map(m => `<button type="button" class="ai-quick-btn" data-builtin="${escapeHtml(m.key)}">${icon[m.kind] || '🤖'} ${escapeHtml(t(m.kind === 'spot' ? 'c24_countOocyst' : 'c24_countEgg'))}</button>`).join('') +
+    `<div class="small muted">${escapeHtml(cat && !cat.review ? t('c24_into', { cat: cat.name }) : t('c24_hint'))}</div>`;
+}
+async function countWithBuiltin(key) {
+  if (!state.doc) { toast(t('c17_needImage')); return; }
+  if (tallyBlocked()) return;
+  const m = BUILTIN_MODELS.find(x => x.key === key);
+  let cat = findCat(state.currentCat);
+  if (!m) return;
+  if (!cat || cat.review) cat = state.doc.categories.find(c => !c.review);
+  if (!cat) return;
+  const pick = Object.assign({}, prefs.get('lcPick', {}) || {}); pick[cat.name] = m.id; prefs.set('lcPick', pick);
+  if (state.currentCat !== cat.id) selectCategory(cat.id);
+  await countCurrent(false);
+  refreshLearnUI();
+}
 // 「少漏 ↔ 少报」：在模型的最佳阈值上加减
 const lcOffset = () => +(($('#lcSens') && $('#lcSens').value) || prefs.get('lcSens', 0)) || 0;
 // 对当前图片：每个有模型的类别各数一遍
@@ -34421,12 +34852,13 @@ function setPanelOpen(key, open) {
   if (open) { for (const k of Object.keys(floating)) floating[k].panel.style.zIndex = '20'; f.panel.style.zIndex = '24'; }   // 仍低于菜单（25）与弹出菜单（30）
   f.panel.hidden = !open;
   prefs.set(layoutKey('open.' + key), open);
-  const btn = $(`[data-cmd="${{ folders: 'toggleFolders', hints: 'toggleHints', ai: 'toggleAi', tools: 'toggleTools', live: 'toggleLive', quick: 'toggleQuick' }[key]}"]`);
+  const btn = $(`[data-cmd="${{ folders: 'toggleFolders', hints: 'toggleHints', ai: 'toggleAi', tools: 'toggleTools', live: 'toggleLive', quick: 'toggleQuick', adjust: 'toggleAdj' }[key]}"]`);
   if (btn) btn.classList.toggle('active', open);
   if (open) f.apply();
   if (open && key === 'tools') updateToolsPanel();
   if (open && key === 'live') updateLivePanel();
   if (open && key === 'quick') updateQuickPanel();
+  if (open && key === 'adjust') updateAdjPanel();
   if (open && f.avoid) f.avoid();   // 内容填好（高度确定）后再错开
   if (key !== 'hints' && floating.hints && !floating.hints.panel.hidden) renderHints();   // v1.4.10.4：「现在可以」
 }
@@ -34868,7 +35300,7 @@ function initMobileLayout() {
     applyMobileLayout();
     // 切换布局时按各自记住的状态打开 / 收起面板
     setSidePanel(prefs.get(layoutKey('sidePanel'), !isMobile()) !== false);
-    for (const key of Object.keys(floating)) setPanelOpen(key, prefs.get(layoutKey('open.' + key), !isMobile() && !['ai', 'tools', 'hints', 'live', 'quick'].includes(key)));
+    for (const key of Object.keys(floating)) setPanelOpen(key, prefs.get(layoutKey('open.' + key), !isMobile() && !['ai', 'tools', 'hints', 'live', 'quick', 'adjust'].includes(key)));
   };
   if (mq.addEventListener) mq.addEventListener('change', onChange); else if (mq.addListener) mq.addListener(onChange);
 }
@@ -35379,8 +35811,31 @@ function updateAiButtons() {
   $('#aiStop').hidden = !ai.busy;
 }
 
+// v1.4.15：「目标」里先列各对象专用的算法（训练好的 AI 模型 / 阈值法），再列简单斑点检测（原来的识别方案）
+//   m:<模型 key> → 内置网络模型（egglib.js）；t:<预设> → 阈值 + 分水岭（原「阈值计数」标签页，已合并到这里）
+const AI_TARGETS = [
+  { id: 'm:anopheles-egg-blob', label: 'c25_tEgg' },
+  { id: 'm:mosquito-oocyst-spot', label: 'c25_tOocyst' },
+  { id: 't:colony', label: 'c25_tColony' },
+  { id: 't:plaque', label: 'c25_tPlaque' }
+];
+const aiTarget = () => { const v = prefs.get('ai.target', null); return AI_TARGETS.some(x => x.id === v) ? v : null; };
 function fillProfileSelect() {
-  $('#aiProfile').innerHTML = ai.profiles.map(p => `<option value="${escapeHtml(p.id)}"${p.id === ai.profileId ? ' selected' : ''}>${escapeHtml(profileName(p))}</option>`).join('');
+  const tg = aiTarget();
+  $('#aiProfile').innerHTML = `<optgroup label="${escapeHtml(t('c25_grpModels'))}">` +
+    AI_TARGETS.filter(x => !x.id.startsWith('m:') || BUILTIN_MODELS.some(m => 'm:' + m.key === x.id)).map(x => `<option value="${x.id}"${x.id === tg ? ' selected' : ''}>${escapeHtml(t(x.label))}</option>`).join('') +
+    `</optgroup><optgroup label="${escapeHtml(t('c25_grpSimple'))}">` +
+    ai.profiles.map(p => `<option value="${escapeHtml(p.id)}"${!tg && p.id === ai.profileId ? ' selected' : ''}>${escapeHtml(profileName(p))}</option>`).join('') + '</optgroup>';
+}
+// 选了专用算法时：模型 → 只留「目标」与「开始计数」；阈值 → 显示阈值计数的参数（预设跟着选项）
+function applyAiTarget() {
+  syncAiMode();   // 先显示阈值参数（第一次会建好界面），再切预设
+  const tg = aiTarget();
+  if (tg && tg.startsWith('t:')) {
+    const host = $('#acHostAi'), sel = host && $('[data-ac="preset"]', host);
+    if (state.doc && ac.forId !== state.activeId) { ac.params = null; ac.forId = state.activeId; acParams(); }   // 先绑定本图参数，免得切预设后被重新载入覆盖
+    if (sel && sel.value !== tg.slice(2)) { sel.value = tg.slice(2); sel.dispatchEvent(new Event('change', { bubbles: true })); }
+  }
 }
 
 function fillCategorySelects() {
@@ -35438,7 +35893,12 @@ function initAiPanel() {
   fillProfileForm();
   $('#aiEngine').value = prefs.get('ai.engine', 'local');
   fillEngineForm();
-  $('#aiProfile').addEventListener('change', (e) => { ai.profileId = e.target.value; saveAiProfiles(); fillProfileForm(); });
+  $('#aiProfile').addEventListener('change', (e) => {
+    const v = e.target.value;
+    if (AI_TARGETS.some(x => x.id === v)) prefs.set('ai.target', v);
+    else { prefs.set('ai.target', null); ai.profileId = v; saveAiProfiles(); fillProfileForm(); }
+    applyAiTarget();
+  });
   $('#aiProfNew').addEventListener('click', () => {
     const base = clone(currentProfile());
     base.id = 'p-' + Date.now().toString(36);
@@ -35476,7 +35936,7 @@ function initAiPanel() {
   $('#aiEngine').addEventListener('change', (e) => { prefs.set('ai.engine', e.target.value); fillEngineForm(); });
   ['aiKey', 'aiModel', 'aiUrl'].forEach(id => $('#' + id).addEventListener('change', saveEngineForm));
   $('#aiRemember').addEventListener('change', saveEngineForm);
-  $('#aiRun').addEventListener('click', () => aiRun('count'));
+  $('#aiRun').addEventListener('click', () => { const tg = aiTarget(); if (tg && tg.startsWith('m:')) countWithBuiltin(tg.slice(2)); else aiRun('count'); });
   $('#aiVerify').addEventListener('click', () => aiRun('verify'));
   $('#aiStop').addEventListener('click', () => { if (ai.abort) ai.abort.abort(); });
   $('#aiCalib').addEventListener('click', aiCalibrate);
@@ -36173,6 +36633,7 @@ function initUI() {
     toggleFolders: () => togglePanel('folders'),
     toggleHints: () => togglePanel('hints'),
     toggleLive: () => togglePanel('live'),
+    toggleAdj: () => togglePanel('adjust'),
     toggleQuick: () => { if (quickOpen()) setPanelOpen('quick', false); else runAddAction('quick'); },
     toggleSidePanel: () => setSidePanel(!sidePanelOpen()),
     toggleImmersive: () => setImmersive(!immersiveOn()),   // v1.4.10.5
@@ -36344,6 +36805,7 @@ function updateStatus() {
   const adjOn = typeof adjActive === 'function' && adjActive(doc), procOn = typeof procActive === 'function' && procActive(doc);
   const stAdj = $('#stAdj');
   if (stAdj) { stAdj.hidden = !(adjOn || procOn); $('#stAdjOpen').textContent = '🎨 ' + t(procOn ? 'c23_procOn' : 'c23_adjOn'); }
+  if (typeof updateAdjPanel === 'function') updateAdjPanel();
   const counts = countsByCategory();
   const total = markerCount(state.entry);   // v1.4.10：含目镜计数
   $('#stTotal').innerHTML = `${escapeHtml(t('total'))}: <b id="totalCount">${total}</b>`;
@@ -36415,6 +36877,7 @@ function selectCategory(id) {
   // 只切换高亮，不重建列表（重建会使双击改名落在已被替换的元素上）
   $$('.cat-item').forEach(li => li.classList.toggle('active', li.dataset.id === id));
   updatePanel();
+  if (typeof renderAiQuick === 'function') renderAiQuick();
   updateStatus();   // 状态栏的框跟随当前类别
   if (typeof updateMobCatBtn === 'function') updateMobCatBtn();
   if (typeof refreshLearnUI === 'function') refreshLearnUI();   // v1.4.11.1：学习状态按当前类别
@@ -36747,6 +37210,7 @@ function setLanguage(lang) {
   initImporter(); initGuides(); initSampleSheet(); initReport(); initStatusNav(); initStackBar(); initImageJ(); initPreview(); initInteropMenu(); initAiAutoCountSwitch();
   initTally(); initKeys(); initRename(); initLivePanel(); initQuickPanel(); initAddMenu(); initOpHelp(); initNaming(); initOrganize(); initProjects(); initPackDialog();   // v1.4.10
   initMobileCat();
+  initAdjPanel();   // v1.4.15
   initTour();
   warnTempFile();
 
